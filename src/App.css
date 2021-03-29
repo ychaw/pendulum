@@ -1,277 +1,108 @@
 #root {
   height: 100%;
-  /* Gray 0 */
   background: #222222;
+  color: #FFFFFF;
 }
 
-/*
-
-  TODO: MOVE TO GRID LAYOUT!!!
-
-*/
+/* ================================================================================================ */
 
 .App {
-  /* Auto Layout */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: minmax(4rem, 0.5fr) 1fr 1fr 1fr 1fr;
+  gap: 1.75rem;
+  grid-template-areas:
+    "HeaderCard HeaderCard HeaderCard HeaderCard"
+    "FocusCard FocusCard FocusCard DetailTopCard"
+    "FocusCard FocusCard FocusCard DetailCenterCard"
+    "FocusCard FocusCard FocusCard DetailBottomCard"
+    "SettingsOscillatorCard SettingsEnvelopeCard SettingsFilterCard SettingsVolumeCard";
+
+  padding: 1.75rem 0 0 0;
 
   position: relative;
   max-width: 1440px;
   width: 100%;
-  max-height: 1024px;
+  max-height: 1044px;
   height: 100%;
 
   margin: auto;
+
+  filter: drop-shadow(0px 0px 0.5rem rgba(0, 0, 0, 0.5));
 }
 
-.AnimationWindow {
-  /* Auto Layout */
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 0px;
 
-  position: static;
+/* ================================================================================================ */
 
-  /* Card Shadow */
-  filter: drop-shadow(0px 0px 15px rgba(0, 0, 0, 0.5));
-  transform: matrix(1, 0, 0, -1, 0, 0);
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 1;
-  margin: 0px 0px;
-}
-
-.SettingsWindow {
-  /* Auto Layout */
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 15px;
-
-  position: static;
-  height: 245px;
-
-  /* Card Shadow */
-  filter: drop-shadow(0px 0px 15px rgba(0, 0, 0, 0.5));
-  transform: matrix(1, 0, 0, -1, 0, 0);
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 0;
-  margin: 0px 0px;
-}
-
-.FocusWindow {
-  /* Auto Layout */
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 15px;
-
-  position: static;
-
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 1;
-  margin: 0px 0px;
-}
-
-.DetailWindow {
-  /* Auto Layout */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 15px;
-
-  position: static;
-  width: 329px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 0;
-  margin: 0px 0px;
+.HeaderCard,
+.FocusCard,
+.DetailTopCard,
+.DetailCenterCard,
+.DetailBottomCard,
+.SettingsOscillatorCard,
+.SettingsEnvelopeCard,
+.SettingsFilterCard,
+.SettingsVolumeCard {
+  background: #333333;
+  border-radius: 1.4rem;
 }
 
 /* ================================================================================================ */
+
+.HeaderCard {
+  grid-area: HeaderCard;
+}
 
 .FocusCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-
-  /* Blue 1 */
-  border: 2px solid #2F80ED;
-  box-sizing: border-box;
-
-  /* Highlighted Inner Shadow */
-  box-shadow: inset 0px 0px 10px #2F80ED;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 1;
+  grid-area: FocusCard;
 }
 
-/* ================================================================================================ */
-
 .DetailTopCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-top: 0px;
-  margin-bottom: 15px;
+  grid-area: DetailTopCard;
 }
 
 .DetailCenterCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  grid-area: DetailCenterCard;
 }
 
 .DetailBottomCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  grid-area: DetailBottomCard;
+}
 
-  /* Gray 1 */
-  background: #333333;
-  border-radius: 20px;
+.SettingsOscillatorCard {
+  grid-area: SettingsOscillatorCard;
+}
 
-  /* Inside Auto Layout */
-  flex: none;
-  order: 2;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-top: 15px;
-  margin-bottom: 0px;
+.SettingsEnvelopeCard {
+  grid-area: SettingsEnvelopeCard;
+}
+
+.SettingsFilterCard {
+  grid-area: SettingsFilterCard;
+}
+
+.SettingsVolumeCard {
+  grid-area: SettingsVolumeCard;
 }
 
 /* ================================================================================================ */
 
-
-.SettingsOscillatorCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-
-  /* Blue 1 */
+.SettingsOscillatorCard:hover {
   border: 2px solid #2F80ED;
-  box-sizing: border-box;
-
-  /* Highlighted Inner Shadow */
   box-shadow: inset 0px 0px 10px #2F80ED;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 0;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-left: 0px;
-  margin-right: 15px;
 }
 
-.SettingsEnvelopeCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-left: 15px;
-  margin-right: 15px;
+.SettingsEnvelopeCard:hover {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
 }
 
-.SettingsFilterCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 2;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-left: 15px;
-  margin-right: 15px;
+.SettingsFilterCard:hover {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
 }
 
-.SettingsVolumeCard {
-  position: static;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-
-  /* Gray 1 */
-  background: #333333;
-  border-radius: 20px;
-
-  /* Inside Auto Layout */
-  flex: none;
-  order: 3;
-  align-self: stretch;
-  flex-grow: 1;
-  margin-left: 15px;
-  margin-right: 0px;
+.SettingsVolumeCard:hover {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
 }
