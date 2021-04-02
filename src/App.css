@@ -7,10 +7,22 @@
 /* ================================================================================================ */
 
 .App {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  max-width: 1440px;
+  max-height: 1044px;
+  width: 100%;
+  height: 100%;
+
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: minmax(4rem, 0.5fr) 1fr 1fr 1fr 1fr;
-  gap: 1.75rem;
+  gap: 30px;
   grid-template-areas:
     "HeaderCard HeaderCard HeaderCard HeaderCard"
     "FocusCard FocusCard FocusCard DetailTopCard"
@@ -18,17 +30,7 @@
     "FocusCard FocusCard FocusCard DetailBottomCard"
     "SettingsOscillatorCard SettingsEnvelopeCard SettingsFilterCard SettingsVolumeCard";
 
-  padding: 1.75rem 0 0 0;
-
-  position: relative;
-  max-width: 1440px;
-  width: 100%;
-  max-height: 1044px;
-  height: 100%;
-
-  margin: auto;
-
-  filter: drop-shadow(0px 0px 0.5rem rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.5));
 }
 
 
@@ -44,13 +46,19 @@
 .SettingsFilterCard,
 .SettingsVolumeCard {
   background: #333333;
-  border-radius: 1.4rem;
+  border-radius: 20px;
+  border: 2px solid #333333;
 }
 
 /* ================================================================================================ */
 
 .HeaderCard {
   grid-area: HeaderCard;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 1fr;
+  gap: 30px;
+  grid-template-areas: "Title Subtitle";
 }
 
 .FocusCard {
@@ -105,4 +113,47 @@
 .SettingsVolumeCard:hover {
   border: 2px solid #2F80ED;
   box-shadow: inset 0px 0px 10px #2F80ED;
+}
+
+/* ================================================================================================ */
+
+.HeaderText {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: normal;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+h1.HeaderText {
+  grid-area: Title;
+  font-size: 34px;
+  margin-left: 30px;
+  margin-right: auto;
+}
+
+h3.HeaderText {
+  grid-area: Subtitle;
+  font-size: 18px;
+  margin-left: auto;
+  margin-right: 30px;
+}
+
+/* ================================================================================================ */
+
+
+.SettingsHeader {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 22px;
+  text-align: center;
+
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-color: #4F4F4F;
 }
