@@ -21,7 +21,7 @@
 
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: minmax(4rem, 0.5fr) 1fr 1fr 1fr 1fr;
+  grid-template-rows: 0.4fr 1fr 1fr 1fr 1fr;
   gap: 30px;
   grid-template-areas:
     "HeaderCard HeaderCard HeaderCard HeaderCard"
@@ -31,8 +31,9 @@
     "SettingsOscillatorCard SettingsEnvelopeCard SettingsFilterCard SettingsVolumeCard";
 
   filter: drop-shadow(0px 0px 8px rgba(0, 0, 0, 0.5));
-}
 
+  user-select: none;
+}
 
 /* ================================================================================================ */
 
@@ -59,6 +60,10 @@
   grid-template-rows: 1fr;
   gap: 30px;
   grid-template-areas: "Title Subtitle";
+}
+
+.Visualizations {
+  display: contents;
 }
 
 .FocusCard {
@@ -111,6 +116,26 @@
 }
 
 .SettingsVolumeCard:hover {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
+}
+
+.FocusCard#FocusCard {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
+}
+
+.DetailTopCard#DetailTopCard {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
+}
+
+.DetailCenterCard#DetailCenterCard {
+  border: 2px solid #2F80ED;
+  box-shadow: inset 0px 0px 10px #2F80ED;
+}
+
+.DetailBottomCard#DetailBottomCard {
   border: 2px solid #2F80ED;
   box-shadow: inset 0px 0px 10px #2F80ED;
 }
