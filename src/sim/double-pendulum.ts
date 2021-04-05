@@ -1,28 +1,56 @@
-class DoublePendulum {
+// TYPE DECLARATIONS
+interface InitialConditions {
+  theta: Array<number>;
+  l: Array<number>;
+  m: Array<number>;
+  g: number;
+}
+
+interface Memory {
+    massSum: number;
+    biasedMassSum: number;
+    angleDifference: number;
+    doubleSineAngleDiff: number;
+    cosAngleDiff: number;
+    denFactor: number;
+    velSquaredTimesL: Array<number>;
+}
+
+export class DoublePendulum {
   // TYPES
-  p: array;
+  x: Array<number>;
+  y: Array<number>;
+  theta: Array<number>;
+  dTheta: Array<number>;
+  ddTheta: Array<number>;
+  l: Array<number>;
+  m: Array<number>;
   g: number;
   mem: Memory;
-  
-  interface Memory {
-      massSum: number;
-      biasedMassSum: number;
-      angleDifference: number;
-      doubleSineAngleDiff: number;
-      cosAngleDiff: number;
-      denFactor: number;
-      velSquaredTimesL: number;
-  }
 
-  // initial theta in rad
-  constructor(theta1 = PI / 2, theta2 = PI / 4) {
-    this.p = [
-      // x, y, [theta, theta', theta''], rod length, mass
-      [0, 0, [theta1, 0, 0], 120, 10],
-      [0, 0, [theta2, 0, 0], 70, 10]
-    ]
-    // gravity
-    this.g = 1;
+  constructor(init: InitialConditions) {
+    const defaults = {
+      theta: [
+        Math.PI/4,
+        Math.PI/4,
+      ],
+      l: [120, 70],
+      m: [10, 10],
+      g: 1,
+    };
+    const initialConditions = {
+      ...defaults,
+      ...init
+    }
+    this.x = [0, 0];
+    this.y = [0, 0];
+    this.theta = initialConditions.theta;
+    this.dTheta = [0, 0];
+    this.ddTheta = [0, 0];
+    this.l = initialConditions.l;
+    this.m = initialConditions.m;
+    this.g = initialConditions.g;
+
     // object to store repeated calculations in
     this.mem = {
       massSum: 0,
@@ -31,30 +59,29 @@ class DoublePendulum {
       doubleSineAngleDiff: 0,
       cosAngleDiff: 0,
       denFactor: 0,
-      velSquaredTimesL: 0,
+      velSquaredTimesL: [0, 0],
     };
   }
   
   tick() {
-    const {p, g, mem} = this;
-    const theta = [p[0][2], p[1][2]];
+    const {sin, cos} = Math;
+    const {x, y, theta, dTheta, ddTheta, l, m, g, mem} = this;
 
     // extract repeated calculations
-    mem.massSum = p[0][4] + p[1][4];
-    mem.biasedMassSum = 2 * p[0][4] + p[1][4];
-    mem.angleDifference = theta[0][0] - theta[1][0];
+    mem.massSum = m[0] + m[1];
+    mem.biasedMassSum = 2 * m[0] + m[1];
+    mem.angleDifference = theta[0] - theta[1];
     mem.doubleSineAngleDiff = 2 * sin(mem.angleDifference);
     mem.cosAngleDiff = cos(mem.angleDifference);
-    mem.denFactor = mem.biasedMassSum - p[1][4] * cos(2 * mem.angleDifference);
+    mem.denFactor = mem.biasedMassSum - m[1] * cos(2 * mem.angleDifference);
     mem.velSquaredTimesL = [
-      theta[0][1] * theta[0][1] * p[0][3],
-      theta[1][1] * theta[1][1] * p[1][3]
+      dTheta[0] * dTheta[0] * l[0],
+      dTheta[1] * dTheta[1] * l[1]
     ];
 
     const {
       massSum,
       biasedMassSum,
-      angleDifference,
       doubleSineAngleDiff,
       cosAngleDiff,
       denFactor,
@@ -65,35 +92,35 @@ class DoublePendulum {
     // the equations are very long fractions, that's why they were split like this
     const num = [0, 0, 0, 0];
     const den = [
-      p[0][3] * denFactor,
-      p[1][3] * denFactor
+      l[0] * denFactor,
+      l[1] * denFactor
     ];
-    
+
     // for theta 1
-    num[0] = -g * biasedMassSum * sin(theta[0][0]);
-    num[1] = -p[1][4] * g * sin(theta[0][0] - 2 * theta[1][0]);
-    num[2] = -doubleSineAngleDiff * p[1][4];
-    num[3] = velSquaredTimesL[1] + theta[0][1] * theta[0][1] * p[0][3] * cosAngleDiff;
-    theta[0][2] = (num[0] + num[1] + num[2] * num[3]) / den[0];
+    num[0] = -g * biasedMassSum * sin(theta[0]);
+    num[1] = -m[1] * g * sin(theta[0] - 2 * theta[1]);
+    num[2] = -doubleSineAngleDiff * m[1]
+    num[3] = velSquaredTimesL[1] + velSquaredTimesL[0] * cosAngleDiff;
+    ddTheta[0] = (num[0] + num[1] + num[2] * num[3]) / den[0];
     
     // for theta 2
     num[0] = doubleSineAngleDiff;
     num[1] = velSquaredTimesL[0] * massSum;
-    num[2] = g * massSum * cos(theta[0][0]);
-    num[3] = velSquaredTimesL[1] * p[1][4] * cosAngleDiff; 
-    theta[1][2] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
+    num[2] = g * massSum * cos(theta[0]);
+    num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff; 
+    ddTheta[1] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
     
     // calculate the new bob positions
-    p[0][0] = p[0][3] * sin(theta[0][0]);
-    p[0][1] = p[0][3] * cos(theta[0][0]);
+    x[0] = l[0] * sin(theta[0]);
+    y[0] = l[0] * cos(theta[0]);
     
-    p[1][0] = p[0][0] + p[1][3] * sin(theta[1][0]);
-    p[1][1] = p[0][1] + p[1][3] * cos(theta[1][0]);
+    x[1] = x[0] + l[1] * sin(theta[1]);
+    y[1] = y[0] + l[1] * cos(theta[1]);
     
     // simulate physics for theta 1 and 2
     for(let i = 0; i < 2; i++) {
-      theta[i][1] += theta[i][2];
-      theta[i][0] += theta[i][1]
+      dTheta[i] += ddTheta[i];
+      theta[i] += dTheta[i]
     }
   }
 }
