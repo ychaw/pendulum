@@ -4,9 +4,9 @@ import Visualizations from './Visualizations'
 
 class App extends React.Component<{}, { visualsOrder: any, highlighted: string }> {
 
-  constructor(props) {
+  constructor(props: {} | Readonly<{}>) {
     super(props);
-    this.highlight = this.highlight.bind(this);
+    this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
     this.state = {
       visualsOrder: {
@@ -19,7 +19,7 @@ class App extends React.Component<{}, { visualsOrder: any, highlighted: string }
     }
   }
 
-  highlight(e: any) {
+  setHighlight(e: any) {
     const currentState = this.state;
     this.setState({
       visualsOrder: currentState.visualsOrder,
@@ -43,19 +43,19 @@ class App extends React.Component<{}, { visualsOrder: any, highlighted: string }
           <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
         </div>
         <Visualizations highlighted={this.state.highlighted} />
-        <div className="SettingsOscillatorCard" id="Oscillator" onMouseEnter={this.highlight} onMouseLeave={this.clearHighlight}>
+        <div className="SettingsOscillatorCard" id="Oscillator" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
           <div className="SettingsHeader">Oscillator</div>
           <div className="SettingsContent"></div>
         </div>
-        <div className="SettingsEnvelopeCard" id="Envelope" onMouseEnter={this.highlight} onMouseLeave={this.clearHighlight}>
+        <div className="SettingsEnvelopeCard" id="Envelope" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
           <div className="SettingsHeader">Envelope</div>
           <div className="SettingsContent"></div>
         </div>
-        <div className="SettingsFilterCard" id="Filter" onMouseEnter={this.highlight} onMouseLeave={this.clearHighlight}>
+        <div className="SettingsFilterCard" id="Filter" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
           <div className="SettingsHeader">Filter</div>
           <div className="SettingsContent"></div>
         </div>
-        <div className="SettingsVolumeCard" id="Volume" onMouseEnter={this.highlight} onMouseLeave={this.clearHighlight}>
+        <div className="SettingsVolumeCard" id="Volume" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
           <div className="SettingsHeader">Volume</div>
           <div className="SettingsContent"></div>
         </div>
