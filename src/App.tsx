@@ -1,8 +1,9 @@
 import React from 'react';
 import './App.css';
-import Visualizations from './Visualizations'
+import Visualizations from './com/Visualizations'
+import SettingsCards from './com/SettingsCards';
 
-class App extends React.Component<{}, { visualsOrder: any, highlighted: string }> {
+class App extends React.Component<{}, { visualsOrder: { [key: string]: string }, highlighted: string }> {
 
   constructor(props: any) {
     super(props);
@@ -43,22 +44,7 @@ class App extends React.Component<{}, { visualsOrder: any, highlighted: string }
           <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
         </div>
         <Visualizations highlighted={this.state.highlighted} />
-        <div className="SettingsOscillatorCard" id="Oscillator" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
-          <div className="SettingsHeader">Oscillator</div>
-          <div className="SettingsContent"></div>
-        </div>
-        <div className="SettingsEnvelopeCard" id="Envelope" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
-          <div className="SettingsHeader">Envelope</div>
-          <div className="SettingsContent"></div>
-        </div>
-        <div className="SettingsFilterCard" id="Filter" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
-          <div className="SettingsHeader">Filter</div>
-          <div className="SettingsContent"></div>
-        </div>
-        <div className="SettingsVolumeCard" id="Volume" onMouseEnter={this.setHighlight} onMouseLeave={this.clearHighlight}>
-          <div className="SettingsHeader">Volume</div>
-          <div className="SettingsContent"></div>
-        </div>
+        <SettingsCards classNames={Object.keys(this.state.visualsOrder)} onMouseEnterChild={this.setHighlight} onMouseLeaveChild={this.clearHighlight} />
       </div>
     );
   }

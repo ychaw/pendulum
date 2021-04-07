@@ -62,7 +62,8 @@
   grid-template-areas: "Title Subtitle";
 }
 
-.Visualizations {
+.Visualizations,
+.SettingsCards {
   display: contents;
 }
 
