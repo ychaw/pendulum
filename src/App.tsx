@@ -4,7 +4,7 @@ import Visualizations from './Visualizations'
 
 class App extends React.Component<{}, { visualsOrder: any, highlighted: string }> {
 
-  constructor(props: {} | Readonly<{}>) {
+  constructor(props: any) {
     super(props);
     this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
