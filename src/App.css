@@ -187,3 +187,9 @@ h3.HeaderText {
   border-bottom-style: solid;
   border-color: #4F4F4F;
 }
+
+
+#pendulum {
+  width: 100%;
+  height: 100%;
+}
