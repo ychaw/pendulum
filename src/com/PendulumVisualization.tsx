@@ -18,11 +18,20 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
     let paused: boolean = false;
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
-        p5.createCanvas(canvasParentRef.clientWidth, canvasParentRef.clientHeight).parent(canvasParentRef);
         dim = [canvasParentRef.clientWidth, canvasParentRef.clientHeight];
+        p5.createCanvas(dim[0], dim[1]).parent(canvasParentRef);
 
         p5.mouseClicked = (event: any) => {
             paused = !paused;
+        }
+
+        p5.windowResized = () => {
+            let newWidth = document.getElementsByClassName('FocusCard').item(0)?.clientWidth as number;
+            if (newWidth !== dim[0]) {
+                dim[0] = newWidth;
+                buffer.resizeCanvas(dim[0] - padding, dim[1] - padding, true);
+                buffer.translate(dim[0] / 2, dim[1] / 2);
+            }
         }
 
         buffer = p5.createGraphics(dim[0] - padding, dim[1] - padding);
@@ -46,8 +55,23 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
 
             p5.clear();
 
+            // Memory Line/Dots
             if (props.continuousLine) {
-                p5.image(buffer, padding / 2, padding / 2, dim[0] - padding, dim[1] - padding);
+                p5.image(buffer, padding / 2, padding / 2);
+                buffer.stroke(221);
+                buffer.strokeWeight(1);
+                if (p5.frameCount > 1) {
+                    buffer.line(px1 - padding / 2, py1 - padding / 2, x1 - padding / 2, y1 - padding / 2);
+                }
+            } else {
+                let newLength = mem.push([x1, y1]);
+                if (newLength > 100) {
+                    mem.shift();
+                }
+                mem.forEach((e) => {
+                    p5.fill(221);
+                    p5.circle(e[0], e[1], 2);
+                });
             }
 
             p5.translate(dim[0] / 2, dim[1] / 2);
@@ -65,25 +89,7 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
             p5.circle(0, 0, 10);
             p5.circle(x0, y0, 10);
             p5.circle(x1, y1, 10);
-
-            // Memory Line/Dots
-            if (props.continuousLine) {
-                buffer.stroke(221);
-                buffer.strokeWeight(1);
-                if (p5.frameCount > 1) {
-                    buffer.line(px1 - padding / 2, py1 - padding / 2, props.dp.x[1] - padding / 2, props.dp.y[1] - padding / 2);
-                }
-            } else {
-                let newLength = mem.push([props.dp.x[1], props.dp.y[1]]);
-                if (newLength > 100) {
-                    mem.shift();
-                }
-                mem.forEach((e) => {
-                    p5.fill(221);
-                    p5.circle(e[0], e[1], 2);
-                });
-            }
-        }
+        };
     };
 
     return <Sketch setup={setup} draw={draw} className="pendulum" />;
