@@ -49,6 +49,7 @@
   background: #333333;
   border-radius: 20px;
   border: 2px solid #333333;
+  transition: all 0.5s ease 0s;
 }
 
 /* ================================================================================================ */
@@ -102,41 +103,13 @@
 
 /* ================================================================================================ */
 
-.SettingsOscillatorCard:hover {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
-.SettingsEnvelopeCard:hover {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
-.SettingsFilterCard:hover {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
-.SettingsVolumeCard:hover {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
-.FocusCard#FocusCard {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
-.DetailTopCard#DetailTopCard {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
-.DetailCenterCard#DetailCenterCard {
-  border: 2px solid #2F80ED;
-  box-shadow: inset 0px 0px 10px #2F80ED;
-}
-
+.SettingsOscillatorCard:hover,
+.SettingsEnvelopeCard:hover,
+.SettingsFilterCard:hover,
+.SettingsVolumeCard:hover,
+.FocusCard#FocusCard,
+.DetailTopCard#DetailTopCard,
+.DetailCenterCard#DetailCenterCard,
 .DetailBottomCard#DetailBottomCard {
   border: 2px solid #2F80ED;
   box-shadow: inset 0px 0px 10px #2F80ED;
