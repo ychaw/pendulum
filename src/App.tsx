@@ -4,27 +4,28 @@ import Visualizations from './com/Visualizations'
 import SettingsCards from './com/SettingsCards';
 import { DoublePendulum } from './sim/double-pendulum';
 import { PendulumVisualization } from './com/PendulumVisualization';
-import { sliderSettings } from './data/Presets';
+import { Presets } from './data/Presets';
 
 interface ComponentState {
   visualsOrder: {
     [key: string]: string
   },
-  highlighted: string,
-  paused: boolean
+  highlighted: string
 }
 
 class App extends React.Component<{}, ComponentState> {
 
-  doublePendulum: DoublePendulum
-  dpv: any
-  sliderSettings: any
+  doublePendulum: DoublePendulum;
+  dpv: any;
+  readonly presets: Presets;
+  readonly componentNames: Array<string>;
 
   constructor(props: any) {
     super(props);
 
-    // TODO: use presets in all Components as database --> especially in Sliders 
-    this.sliderSettings = sliderSettings;
+    // use presets in all components as database --> especially in sliders 
+    this.presets = new Presets();
+    this.componentNames = this.presets.getComponentNames();
 
     this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
@@ -37,19 +38,12 @@ class App extends React.Component<{}, ComponentState> {
         'Filter': 'DetailCenterCard',
         'Volume': 'DetailBottomCard',
       },
-      highlighted: '',
-      paused: false
+      highlighted: ''
     }
 
-    this.doublePendulum = new DoublePendulum({
-      theta: [
-        Math.random() * Math.PI * 2,
-        Math.random() * Math.PI * 2,
-      ],
-      l: [160, 160],
-      m: [10, 10],
-      g: 0.8,
-    });
+    this.doublePendulum = new DoublePendulum(
+      this.presets.getDoublePendulumPresets()
+    );
     this.dpv = PendulumVisualization({
       dp: this.doublePendulum,
       memorySettings: {
@@ -69,17 +63,15 @@ class App extends React.Component<{}, ComponentState> {
   }
 
   setHighlight(className: string) {
-    const currentState = this.state;
-    this.setState({
-      visualsOrder: currentState.visualsOrder,
-      highlighted: currentState.visualsOrder[className]
+    this.setState((state) => {
+      return {
+        highlighted: state.visualsOrder[className]
+      }
     });
   }
 
   clearHighlight(e: any) {
-    const currentState = this.state;
     this.setState({
-      visualsOrder: currentState.visualsOrder,
       highlighted: ''
     });
   }
@@ -100,7 +92,8 @@ class App extends React.Component<{}, ComponentState> {
           dpv={this.dpv}
         />
         <SettingsCards
-          classNames={Object.keys(this.state.visualsOrder)}
+          classNames={this.componentNames}
+          presets={this.presets}
           onMouseEnterChild={this.setHighlight}
           onMouseLeaveChild={this.clearHighlight}
           handleSliderChange={this.handleSliderChange}

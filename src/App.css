@@ -115,6 +115,7 @@
   box-shadow: inset 0px 0px 10px #2F80ED;
 }
 
+
 /* ================================================================================================ */
 
 .HeaderText {
@@ -154,12 +155,18 @@ h3.HeaderText {
   letter-spacing: 0.4rem;
 
   margin-top: 15px;
-  margin-bottom: 15px;
   padding-bottom: 15px;
 
   border-bottom-width: 2px;
   border-bottom-style: solid;
   border-color: #4F4F4F;
+}
+
+.SettingsContent {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
 }
 
 
