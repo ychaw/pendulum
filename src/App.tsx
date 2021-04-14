@@ -5,6 +5,15 @@ import SettingsCards from './com/SettingsCards';
 import { DoublePendulum } from './sim/double-pendulum';
 import { PendulumVisualization } from './com/PendulumVisualization';
 import { Presets } from './data/Presets';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#2F80ED',
+    },
+  },
+});
 
 interface ComponentState {
   visualsOrder: {
@@ -23,7 +32,7 @@ class App extends React.Component<{}, ComponentState> {
   constructor(props: any) {
     super(props);
 
-    // use presets in all components as database --> especially in sliders 
+    // use presets in all components as database --> especially in sliders
     this.presets = new Presets();
     this.componentNames = this.presets.getComponentNames();
 
@@ -32,12 +41,7 @@ class App extends React.Component<{}, ComponentState> {
     this.handleSliderChange = this.handleSliderChange.bind(this);
 
     this.state = {
-      visualsOrder: {
-        'Oscillator': 'FocusCard',
-        'Envelope': 'DetailTopCard',
-        'Filter': 'DetailCenterCard',
-        'Volume': 'DetailBottomCard',
-      },
+      visualsOrder: this.presets.visualsOrder,
       highlighted: ''
     }
 
@@ -46,23 +50,14 @@ class App extends React.Component<{}, ComponentState> {
     );
     this.dpv = PendulumVisualization({
       dp: this.doublePendulum,
-      memorySettings: {
-        drawMode: 'fadingLine',
-        maxMem: 400,
-        fadingStart: 150,
-        strokeWeight: 1,
-        drawColor: [200, 200, 200]
-      },
-      pendulumSettings: {
-        drawColor: [255, 255, 255],
-        legWeight: 4,
-        ankleWidth: 10
-      }
+      memorySettings: this.presets.pvMemorySettings,
+      pendulumSettings: this.presets.pvPendulumSettings
     });
 
   }
 
   setHighlight(className: string) {
+    console.log('set Highlight')
     this.setState((state) => {
       return {
         highlighted: state.visualsOrder[className]
@@ -71,6 +66,7 @@ class App extends React.Component<{}, ComponentState> {
   }
 
   clearHighlight(e: any) {
+    console.log('clear Highlight')
     this.setState({
       highlighted: ''
     });
@@ -81,24 +77,27 @@ class App extends React.Component<{}, ComponentState> {
   }
 
   render() {
+    console.log('render');
     return (
-      <div className="App">
-        <div className="HeaderCard">
-          <h1 className="HeaderText">Pendulum</h1>
-          <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
+      <ThemeProvider theme={theme}>
+        <div className="App">
+          <div className="HeaderCard">
+            <h1 className="HeaderText">Pendulum</h1>
+            <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
+          </div>
+          <Visualizations
+            highlighted={this.state.highlighted}
+            dpv={this.dpv}
+          />
+          <SettingsCards
+            classNames={this.componentNames}
+            presets={this.presets}
+            onMouseEnterChild={this.setHighlight}
+            onMouseLeaveChild={this.clearHighlight}
+            handleSliderChange={this.handleSliderChange}
+          />
         </div>
-        <Visualizations
-          highlighted={this.state.highlighted}
-          dpv={this.dpv}
-        />
-        <SettingsCards
-          classNames={this.componentNames}
-          presets={this.presets}
-          onMouseEnterChild={this.setHighlight}
-          onMouseLeaveChild={this.clearHighlight}
-          handleSliderChange={this.handleSliderChange}
-        />
-      </div>
+      </ThemeProvider>
     );
   }
 }

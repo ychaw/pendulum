@@ -79,8 +79,32 @@ export class Presets {
   readonly envelope: Component;
   readonly filter: Component;
   readonly volume: Component;
+  readonly visualsOrder: { Oscillator: string; Envelope: string; Filter: string; Volume: string; };
+  readonly pvMemorySettings: { drawMode: 'solidLine' | 'fadingLine' | 'dots'; maxMem: number; fadingStart: number; strokeWeight: number; drawColor: number[]; };
+  readonly pvPendulumSettings: { drawColor: number[]; legWeight: number; ankleWidth: number; };
 
   constructor() {
+
+    this.visualsOrder = {
+      'Oscillator': 'FocusCard',
+      'Envelope': 'DetailTopCard',
+      'Filter': 'DetailCenterCard',
+      'Volume': 'DetailBottomCard',
+    }
+
+    this.pvMemorySettings = {
+      drawMode: 'fadingLine',
+      maxMem: 400,
+      fadingStart: 150,
+      strokeWeight: 1,
+      drawColor: [200, 200, 200]
+    }
+
+    this.pvPendulumSettings = {
+      drawColor: [255, 255, 255],
+      legWeight: 4,
+      ankleWidth: 10
+    }
 
     this.oscillator = new Component('Oscillator', {
       thetaFirstLeg: new Preset({
