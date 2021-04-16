@@ -1,53 +1,43 @@
 import { Slider } from '@material-ui/core';
 
-function OscillatorContent(props: any) {
-    return <div></div>
-}
-
-function EnvelopeContent(props: any) {
-    return <div></div>
-}
-
-function FilterContent(props: any) {
-    return <div></div>
-}
-
-function VolumeContent(props: any) {
-    return (
-        <div>
-            <Slider
-                defaultValue={props.preset.volume.default}
-                min={props.preset.volume.min}
-                max={props.preset.volume.max}
-                onChange={props.handleSliderChange}
-                valueLabelDisplay="auto"
-            />
-        </div>
-    );
+function SettingsContent(props: any) {
+    let params = Object.keys(props.preset);
+    params.shift()
+    return <div className="SettingsContent"> {
+        params.map((param: any, i: number) => {
+            let p = props.preset[param]
+            return (
+                <div className="SettingsContentParameter">
+                    <h3>{param}</h3>
+                    <Slider
+                        key={i}
+                        defaultValue={p.default}
+                        min={p.min}
+                        max={p.max}
+                        onChange={(e, newValue) => props.handleSliderChange(param, newValue)}
+                        valueLabelDisplay="auto"
+                    />
+                </div>
+            )
+        })
+    } </div>
 }
 
 export default function SettingsCards(props: any) {
-    console.log('SettingsCards');
     return (
         <div className="SettingsCards">
             {props.classNames.map((className: string, i: number) => {
                 let preset = props.presets.getComponentByName(className)
                 return (
 
-                    <div className={"Settings" + className + "Card"}
+                    <div
+                        className={"Settings" + className + "Card"}
                         key={i}
-                        onMouseEnter={() => props.onMouseEnterChild(className)}
-                        onMouseLeave={props.onMouseLeaveChild}
+                        onMouseEnter={() => props.setHighlight(className)}
+                        onMouseLeave={props.clearHighlight}
                     >
                         <h2 className="SettingsHeader">{className}</h2>
-                        <div className="SettingsContent">{
-                            {
-                                'Oscillator': <OscillatorContent handleSliderChange={props.handleSliderChange} />,
-                                'Envelope': <EnvelopeContent />,
-                                'Filter': <FilterContent />,
-                                'Volume': <VolumeContent preset={preset} handleSliderChange={props.handleSliderChange} />,
-                            }[className as string]
-                        }</div>
+                        <SettingsContent preset={preset} handleSliderChange={props.sliderChanges[className]} />
                     </div>
 
                 )

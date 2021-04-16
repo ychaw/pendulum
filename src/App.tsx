@@ -38,7 +38,9 @@ class App extends React.Component<{}, ComponentState> {
 
     this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
-    this.handleSliderChange = this.handleSliderChange.bind(this);
+    this.handleOscillatorChange = this.handleOscillatorChange.bind(this);
+    this.handleEnvelopeChange = this.handleEnvelopeChange.bind(this);
+    this.handleVolumeChange = this.handleVolumeChange.bind(this);
 
     this.state = {
       visualsOrder: this.presets.visualsOrder,
@@ -57,7 +59,6 @@ class App extends React.Component<{}, ComponentState> {
   }
 
   setHighlight(className: string) {
-    console.log('set Highlight')
     this.setState((state) => {
       return {
         highlighted: state.visualsOrder[className]
@@ -66,18 +67,28 @@ class App extends React.Component<{}, ComponentState> {
   }
 
   clearHighlight(e: any) {
-    console.log('clear Highlight')
     this.setState({
       highlighted: ''
     });
   }
 
-  handleSliderChange(e: any, newValue: number) {
+  handleOscillatorChange(e: any, newValue: number) {
+    console.log(e, newValue);
+  }
+
+  handleEnvelopeChange(e: any, newValue: number) {
+    console.log(e, newValue);
+  }
+
+  handleFilterChange(e: any, newValue: number) {
+    console.log(e, newValue);
+  }
+
+  handleVolumeChange(e: any, newValue: number) {
     console.log(newValue);
   }
 
   render() {
-    console.log('render');
     return (
       <ThemeProvider theme={theme}>
         <div className="App">
@@ -92,9 +103,14 @@ class App extends React.Component<{}, ComponentState> {
           <SettingsCards
             classNames={this.componentNames}
             presets={this.presets}
-            onMouseEnterChild={this.setHighlight}
-            onMouseLeaveChild={this.clearHighlight}
-            handleSliderChange={this.handleSliderChange}
+            setHighlight={this.setHighlight}
+            clearHighlight={this.clearHighlight}
+            sliderChanges={{
+              'Oscillator': this.handleOscillatorChange,
+              'Envelope': this.handleEnvelopeChange,
+              'Filter': this.handleFilterChange,
+              'Volume': this.handleVolumeChange,
+            }}
           />
         </div>
       </ThemeProvider>
