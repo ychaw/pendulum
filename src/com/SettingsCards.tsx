@@ -7,11 +7,12 @@ function SettingsContent(props: any) {
         params.map((param: any, i: number) => {
             let p = props.preset[param]
             return (
-                <div className="SettingsContentParameter">
-                    <h3>{param}</h3>
+                <div className="SettingsContentParameter" key={i}>
+                    {/*<h3>{p.name}</h3>*/}
                     <Slider
-                        key={i}
+                        className="ParameterSlider"
                         defaultValue={p.default}
+                        step={p.step}
                         min={p.min}
                         max={p.max}
                         onChange={(e, newValue) => props.handleSliderChange(param, newValue)}

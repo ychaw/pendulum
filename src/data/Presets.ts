@@ -1,54 +1,56 @@
 interface IPreset {
-  min: number;
-  max: number;
-  default: number;
+  readonly step?: number;
+  readonly name?: string;
+  readonly min: number;
+  readonly max: number;
+  readonly default: number;
 }
 
 export class Presets {
 
   readonly visualsOrder: {
-    Oscillator: string;
-    Envelope: string;
-    Filter: string;
-    Volume: string;
+    readonly Oscillator: string;
+    readonly Envelope: string;
+    readonly Filter: string;
+    readonly Volume: string;
   };
   readonly pvMemorySettings: {
-    drawMode: 'solidLine' | 'fadingLine' | 'dots';
-    maxMem: number;
-    fadingStart: number;
-    strokeWeight: number;
-    drawColor: number[];
+    readonly drawMode: 'solidLine' | 'fadingLine' | 'dots';
+    readonly maxMem: number;
+    readonly fadingStart: number;
+    readonly strokeWeight: number;
+    readonly drawColor: number[];
   };
   readonly pvPendulumSettings: {
-    drawColor: number[];
-    legWeight: number;
-    ankleWidth: number;
+    readonly drawColor: number[];
+    readonly legWeight: number;
+    readonly ankleWidth: number;
   };
-  oscillator: {
-    name: string;
-    thetaFirstLeg: IPreset;
-    thetaSecondLeg: IPreset;
-    lengthFirstLeg: IPreset;
-    lengthSecondLeg: IPreset;
-    massFirstAnkle: IPreset;
-    massSecondAnkle: IPreset;
-    gravitation: IPreset;
+  readonly oscillator: {
+    readonly name: string;
+    readonly thetaFirstLeg: IPreset;
+    readonly thetaSecondLeg: IPreset;
+    readonly lengthFirstLeg: IPreset;
+    readonly lengthSecondLeg: IPreset;
+    readonly massFirstAnkle: IPreset;
+    readonly massSecondAnkle: IPreset;
+    readonly gravitation: IPreset;
   };
-  envelope: {
-    name: string;
-    a: IPreset;
-    d: IPreset;
-    s: IPreset;
-    r: IPreset;
+  readonly envelope: {
+    readonly name: string;
+    readonly a: IPreset;
+    readonly d: IPreset;
+    readonly s: IPreset;
+    readonly r: IPreset;
   };
-  filter: {
-    name: string;
-    type: { options: string[]; default: string; };
-    frequency: IPreset;
+  readonly filter: {
+    readonly name: string;
+    readonly type: { readonly options: string[]; readonly default: string; };
+    readonly frequency: IPreset;
   };
-  volume: {
-    name: string;
-    volume: IPreset;
+  readonly volume: {
+    readonly name: string;
+    readonly volume: IPreset;
   };
 
   constructor() {
@@ -77,14 +79,16 @@ export class Presets {
     this.oscillator = {
       name: 'Oscillator',
       thetaFirstLeg: {
+        step: 0.01,
         min: 0,
-        max: Math.PI * 2,
-        default: Math.random() * Math.PI * 2
+        max: Math.round(Math.PI * 2 * 100) / 100,
+        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
       },
       thetaSecondLeg: {
+        step: 0.01,
         min: 0,
-        max: Math.PI * 2,
-        default: Math.random() * Math.PI * 2
+        max: Math.round(Math.PI * 2 * 100) / 100,
+        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
       },
       lengthFirstLeg: {
         min: 10,
@@ -107,6 +111,7 @@ export class Presets {
         default: 10
       },
       gravitation: {
+        step: 0.1,
         min: 0,
         max: 2,
         default: 0.8
@@ -147,8 +152,8 @@ export class Presets {
       },
       frequency: {
         min: 0,
-        max: 0,
-        default: 0
+        max: 100,
+        default: 70
       }
     }
 

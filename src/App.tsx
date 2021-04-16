@@ -85,7 +85,7 @@ class App extends React.Component<{}, ComponentState> {
   }
 
   handleVolumeChange(e: any, newValue: number) {
-    console.log(newValue);
+    console.log(e, newValue);
   }
 
   render() {

@@ -167,17 +167,38 @@ h3.HeaderText {
 }
 
 .SettingsContent {
-  margin-top: auto;
-  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
   margin-left: 30px;
   margin-right: 30px;
-  padding-top: 3px;
 }
 
 .SettingsContentParameter {
-  /*
-  css for flex box and then to style children
-  */
+  display: flex;
+  margin-top: auto;
+  margin-bottom: auto;
+  font-size: 15px;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: normal;
+}
+
+.SettingsContentParameter>h3 {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 0;
+  margin-right: 15px;
+}
+
+
+.SettingsContentParameter>.ParameterSlider {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 15px;
+  margin-right: 0;
 }
 
 
