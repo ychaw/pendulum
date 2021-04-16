@@ -102,12 +102,12 @@ export class Presets {
       },
       massFirstAnkle: {
         min: 0,
-        max: 100,
+        max: 20,
         default: 10
       },
       massSecondAnkle: {
         min: 0,
-        max: 100,
+        max: 20,
         default: 10
       },
       gravitation: {

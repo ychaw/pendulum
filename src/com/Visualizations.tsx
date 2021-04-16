@@ -1,4 +1,4 @@
-function Visualizations(props: any) {
+export default function Visualizations(props: any) {
     return (
         <div className="Visualizations">
             <div className="FocusCard" id={props.highlighted}>
@@ -10,5 +10,3 @@ function Visualizations(props: any) {
         </div>
     );
 }
-
-export default Visualizations;
