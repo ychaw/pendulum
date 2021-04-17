@@ -5,6 +5,7 @@ import SettingsCards from './com/SettingsCards';
 import { DoublePendulum } from './sim/double-pendulum';
 import { PendulumVisualization } from './com/PendulumVisualization';
 import { Presets } from './data/Presets';
+import { audioGraph } from './dsp/audio-graph';
 
 interface ComponentState {
   visualsOrder: {
@@ -17,6 +18,8 @@ class App extends React.Component<{}, ComponentState> {
 
   doublePendulum: DoublePendulum;
   dpv: any;
+  audioGraph: any;
+  sliderChangeHandlers: Object;
   readonly presets: Presets;
   readonly componentNames: Array<string>;
 
@@ -29,7 +32,6 @@ class App extends React.Component<{}, ComponentState> {
 
     this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
-    this.handleSliderChange = this.handleSliderChange.bind(this);
 
     this.state = {
       visualsOrder: {
@@ -60,6 +62,17 @@ class App extends React.Component<{}, ComponentState> {
       }
     });
 
+    // create the audio graph
+    this.audioGraph = audioGraph;
+
+    this.sliderChangeHandlers = {
+      masterGain: (e: any, newValue: number) => {
+        this.audioGraph.setGain(newValue);
+      },
+      log: (e: any, newValue: number) => {
+        console.log(newValue);
+      },
+    }
   }
 
   setHighlight(className: string) {
@@ -76,13 +89,9 @@ class App extends React.Component<{}, ComponentState> {
     });
   }
 
-  handleSliderChange(e: any, newValue: number) {
-    console.log(newValue);
-  }
-
   render() {
     return (
-      <div className="App">
+      <div className="App" onClick={() => this.audioGraph.audioContext.resume()}>
         <div className="HeaderCard">
           <h1 className="HeaderText">Pendulum</h1>
           <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
@@ -96,7 +105,7 @@ class App extends React.Component<{}, ComponentState> {
           presets={this.presets}
           onMouseEnterChild={this.setHighlight}
           onMouseLeaveChild={this.clearHighlight}
-          handleSliderChange={this.handleSliderChange}
+          sliderChangeHandlers={this.sliderChangeHandlers}
         />
       </div>
     );

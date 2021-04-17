@@ -28,6 +28,7 @@ function VolumeContent(props: any) {
 }
 
 function SettingsCard(props: any) {
+    const {log, masterGain} = props.sliderChangeHandlers;
     return (
         <div className={"Settings" + props.className + "Card"}
             id={props.className}
@@ -38,10 +39,10 @@ function SettingsCard(props: any) {
             <div className="SettingsHeader">{props.className}</div>
             <div className="SettingsContent">{
                 {
-                    'Oscillator': <OscillatorContent handleSliderChange={props.handleSliderChange} />,
+                    'Oscillator': <OscillatorContent handleSliderChange={log} />,
                     'Envelope': <EnvelopeContent />,
                     'Filter': <FilterContent />,
-                    'Volume': <VolumeContent preset={props.preset} handleSliderChange={props.handleSliderChange} />,
+                    'Volume': <VolumeContent preset={props.preset} handleSliderChange={masterGain} />,
                 }[props.className as string]
             }</div>
         </div>
@@ -61,7 +62,7 @@ export default function SettingsCards(props: any) {
                         preset={preset}
                         onMouseEnterChild={props.onMouseEnterChild}
                         onMouseLeaveChild={props.onMouseLeaveChild}
-                        handleSliderChange={props.handleSliderChange}
+                        sliderChangeHandlers={props.sliderChangeHandlers}
                     />
                 )
             })}

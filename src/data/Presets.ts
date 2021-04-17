@@ -163,7 +163,7 @@ export class Presets {
       volume: new Preset({
         min: 0,
         max: 100,
-        default: 50
+        default: 0
       })
     });
   }
