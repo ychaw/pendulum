@@ -107,7 +107,7 @@ export class DoublePendulum {
     num[0] = doubleSineAngleDiff;
     num[1] = velSquaredTimesL[0] * massSum;
     num[2] = g * massSum * cos(theta[0]);
-    num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff; 
+    num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff;
     ddTheta[1] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
     
     // calculate the new bob positions
@@ -120,7 +120,10 @@ export class DoublePendulum {
     // simulate physics for theta 1 and 2
     for(let i = 0; i < 2; i++) {
       dTheta[i] += ddTheta[i];
-      theta[i] += dTheta[i]
+        theta[i] += dTheta[i];
+        if (Math.abs(theta[i]) > 2 * Math.PI) {
+            theta[i] += theta[i] > 0 ? -2 * Math.PI : 2 * Math.PI;
+        }
     }
   }
 }
