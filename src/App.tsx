@@ -6,6 +6,20 @@ import { DoublePendulum } from './sim/double-pendulum';
 import { PendulumVisualization } from './com/PendulumVisualization';
 import { Presets } from './data/Presets';
 import { audioGraph } from './dsp/audio-graph';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    type: 'dark',
+    primary: {
+      main: '#2F80ED',
+    },
+  },
+  typography: {
+    fontFamily: 'Raleway',
+    fontSize: 16,
+  }
+});
 
 interface ComponentState {
   visualsOrder: {
@@ -19,27 +33,24 @@ class App extends React.Component<{}, ComponentState> {
   doublePendulum: DoublePendulum;
   dpv: any;
   audioGraph: any;
-  sliderChangeHandlers: Object;
   readonly presets: Presets;
   readonly componentNames: Array<string>;
 
   constructor(props: any) {
     super(props);
 
-    // use presets in all components as database --> especially in sliders 
+    // use presets in all components as database --> especially in sliders
     this.presets = new Presets();
     this.componentNames = this.presets.getComponentNames();
 
     this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
+    this.handleOscillatorChange = this.handleOscillatorChange.bind(this);
+    this.handleEnvelopeChange = this.handleEnvelopeChange.bind(this);
+    this.handleVolumeChange = this.handleVolumeChange.bind(this);
 
     this.state = {
-      visualsOrder: {
-        'Oscillator': 'FocusCard',
-        'Envelope': 'DetailTopCard',
-        'Filter': 'DetailCenterCard',
-        'Volume': 'DetailBottomCard',
-      },
+      visualsOrder: this.presets.visualsOrder,
       highlighted: ''
     }
 
@@ -48,31 +59,12 @@ class App extends React.Component<{}, ComponentState> {
     );
     this.dpv = PendulumVisualization({
       dp: this.doublePendulum,
-      memorySettings: {
-        drawMode: 'fadingLine',
-        maxMem: 400,
-        fadingStart: 150,
-        strokeWeight: 1,
-        drawColor: [200, 200, 200]
-      },
-      pendulumSettings: {
-        drawColor: [255, 255, 255],
-        legWeight: 4,
-        ankleWidth: 10
-      }
+      memorySettings: this.presets.pvMemorySettings,
+      pendulumSettings: this.presets.pvPendulumSettings
     });
 
     // create the audio graph
     this.audioGraph = audioGraph;
-
-    this.sliderChangeHandlers = {
-      masterGain: (e: any, newValue: number) => {
-        this.audioGraph.setGain(newValue);
-      },
-      log: (e: any, newValue: number) => {
-        console.log(newValue);
-      },
-    }
   }
 
   setHighlight(className: string) {
@@ -89,25 +81,48 @@ class App extends React.Component<{}, ComponentState> {
     });
   }
 
+  handleOscillatorChange(e: any, newValue: number) {
+    console.log(e, newValue);
+  }
+
+  handleEnvelopeChange(e: any, newValue: number) {
+    console.log(e, newValue);
+  }
+
+  handleFilterChange(e: any, newValue: number) {
+    console.log(e, newValue);
+  }
+
+  handleVolumeChange(e: any, newValue: number) {
+    this.audioGraph.setGain(newValue);
+  }
+
   render() {
     return (
-      <div className="App" onClick={() => this.audioGraph.audioContext.resume()}>
-        <div className="HeaderCard">
-          <h1 className="HeaderText">Pendulum</h1>
-          <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
+      <ThemeProvider theme={theme}>
+        <div className="App">
+          <div className="HeaderCard">
+            <h1 className="HeaderText">Pendulum</h1>
+            <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
+          </div>
+          <Visualizations
+            highlighted={this.state.highlighted}
+            dpv={this.dpv}
+          />
+          <SettingsCards
+            classNames={this.componentNames}
+            presets={this.presets}
+            setHighlight={this.setHighlight}
+            clearHighlight={this.clearHighlight}
+            sliderChanges={{
+              'Oscillator': this.handleOscillatorChange,
+              'Envelope': this.handleEnvelopeChange,
+              'Filter': this.handleFilterChange,
+              'Volume': this.handleVolumeChange,
+            }}
+          />
         </div>
-        <Visualizations
-          highlighted={this.state.highlighted}
-          dpv={this.dpv}
-        />
-        <SettingsCards
-          classNames={this.componentNames}
-          presets={this.presets}
-          onMouseEnterChild={this.setHighlight}
-          onMouseLeaveChild={this.clearHighlight}
-          sliderChangeHandlers={this.sliderChangeHandlers}
-        />
-      </div>
+      </ThemeProvider>
     );
   }
 }

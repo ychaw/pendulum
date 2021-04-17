@@ -1,188 +1,187 @@
 interface IPreset {
-  readonly min: number
-  readonly max: number
-  readonly default: number | string
-  readonly options?: Array<string>
+  readonly step?: number;
+  readonly name?: string;
+  readonly min: number;
+  readonly max: number;
+  readonly default: number;
 }
-
-interface IComponent {
-  readonly thetaFirstLeg?: Preset
-  readonly thetaSecondLeg?: Preset
-  readonly lengthFirstLeg?: Preset
-  readonly lengthSecondLeg?: Preset
-  readonly massFirstAnkle?: Preset
-  readonly massSecondAnkle?: Preset
-  readonly gravitation?: Preset
-  readonly a?: Preset
-  readonly d?: Preset
-  readonly s?: Preset
-  readonly r?: Preset
-  readonly type?: Preset
-  readonly frequency?: Preset
-  readonly volume?: Preset
-}
-
-class Preset {
-  readonly min: number
-  readonly max: number
-  readonly default: number | string
-  readonly options?: Array<string>
-
-  constructor(init: IPreset) {
-    this.min = init.min;
-    this.max = init.max;
-    this.default = init.default;
-    this.options = init.options;
-  }
-}
-
-class Component {
-  readonly name: string
-  readonly thetaFirstLeg?: Preset
-  readonly thetaSecondLeg?: Preset
-  readonly lengthFirstLeg?: Preset
-  readonly lengthSecondLeg?: Preset
-  readonly massFirstAnkle?: Preset
-  readonly massSecondAnkle?: Preset
-  readonly gravitation?: Preset
-  readonly a?: Preset
-  readonly d?: Preset
-  readonly s?: Preset
-  readonly r?: Preset
-  readonly type?: Preset
-  readonly frequency?: Preset
-  readonly volume?: Preset
-
-  constructor(name: string, init: IComponent) {
-    this.name = name;
-    this.thetaFirstLeg = init.thetaFirstLeg;
-    this.thetaSecondLeg = init.thetaSecondLeg;
-    this.lengthFirstLeg = init.lengthFirstLeg;
-    this.lengthSecondLeg = init.lengthSecondLeg;
-    this.massFirstAnkle = init.massFirstAnkle;
-    this.massSecondAnkle = init.massSecondAnkle;
-    this.gravitation = init.gravitation;
-    this.a = init.a;
-    this.d = init.d;
-    this.s = init.s;
-    this.r = init.r;
-    this.type = init.type;
-    this.frequency = init.frequency;
-    this.volume = init.volume;
-  }
-}
-
 
 export class Presets {
 
-  readonly oscillator: Component;
-  readonly envelope: Component;
-  readonly filter: Component;
-  readonly volume: Component;
+  readonly visualsOrder: {
+    readonly Oscillator: string;
+    readonly Envelope: string;
+    readonly Filter: string;
+    readonly Volume: string;
+  };
+  readonly pvMemorySettings: {
+    readonly drawMode: 'solidLine' | 'fadingLine' | 'dots';
+    readonly maxMem: number;
+    readonly fadingStart: number;
+    readonly strokeWeight: number;
+    readonly drawColor: number[];
+  };
+  readonly pvPendulumSettings: {
+    readonly drawColor: number[];
+    readonly legWeight: number;
+    readonly ankleWidth: number;
+  };
+  readonly oscillator: {
+    readonly name: string;
+    readonly thetaFirstLeg: IPreset;
+    readonly thetaSecondLeg: IPreset;
+    readonly lengthFirstLeg: IPreset;
+    readonly lengthSecondLeg: IPreset;
+    readonly massFirstAnkle: IPreset;
+    readonly massSecondAnkle: IPreset;
+    readonly gravitation: IPreset;
+  };
+  readonly envelope: {
+    readonly name: string;
+    readonly a: IPreset;
+    readonly d: IPreset;
+    readonly s: IPreset;
+    readonly r: IPreset;
+  };
+  readonly filter: {
+    readonly name: string;
+    readonly type: { readonly options: string[]; readonly default: string; };
+    readonly frequency: IPreset;
+  };
+  readonly volume: {
+    readonly name: string;
+    readonly volume: IPreset;
+  };
 
   constructor() {
 
-    this.oscillator = new Component('Oscillator', {
-      thetaFirstLeg: new Preset({
+    this.visualsOrder = {
+      'Oscillator': 'FocusCard',
+      'Envelope': 'DetailTopCard',
+      'Filter': 'DetailCenterCard',
+      'Volume': 'DetailBottomCard',
+    }
+
+    this.pvMemorySettings = {
+      drawMode: 'fadingLine',
+      maxMem: 400,
+      fadingStart: 150,
+      strokeWeight: 1,
+      drawColor: [200, 200, 200]
+    }
+
+    this.pvPendulumSettings = {
+      drawColor: [255, 255, 255],
+      legWeight: 4,
+      ankleWidth: 10
+    }
+
+    this.oscillator = {
+      name: 'Oscillator',
+      thetaFirstLeg: {
+        step: 0.01,
         min: 0,
-        max: Math.PI * 2,
-        default: Math.random() * Math.PI * 2
-      }),
-      thetaSecondLeg: new Preset({
+        max: Math.round(Math.PI * 2 * 100) / 100,
+        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
+      },
+      thetaSecondLeg: {
+        step: 0.01,
         min: 0,
-        max: Math.PI * 2,
-        default: Math.random() * Math.PI * 2
-      }),
-      lengthFirstLeg: new Preset({
+        max: Math.round(Math.PI * 2 * 100) / 100,
+        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
+      },
+      lengthFirstLeg: {
         min: 10,
         max: 160,
         default: 160
-      }),
-      lengthSecondLeg: new Preset({
+      },
+      lengthSecondLeg: {
         min: 10,
         max: 160,
         default: 160
-      }),
-      massFirstAnkle: new Preset({
+      },
+      massFirstAnkle: {
         min: 0,
-        max: 100,
+        max: 20,
         default: 10
-      }),
-      massSecondAnkle: new Preset({
+      },
+      massSecondAnkle: {
         min: 0,
-        max: 100,
+        max: 20,
         default: 10
-      }),
-      gravitation: new Preset({
+      },
+      gravitation: {
+        step: 0.1,
         min: 0,
         max: 2,
         default: 0.8
-      }),
-    });
+      },
+    }
 
     // big questions here... ;)
-    this.envelope = new Component('Envelope', {
-      a: new Preset({
+    this.envelope = {
+      name: 'Envelope',
+      a: {
         min: 0,
         max: 100,
-        default: 50
-      }),
-      d: new Preset({
+        default: 20
+      },
+      d: {
         min: 0,
         max: 100,
-        default: 50
-      }),
-      s: new Preset({
+        default: 40
+      },
+      s: {
         min: 0,
         max: 100,
-        default: 50
-      }),
-      r: new Preset({
+        default: 30
+      },
+      r: {
         min: 0,
         max: 100,
-        default: 50
-      })
-    });
+        default: 60
+      }
+    }
 
     // ...and even bigger ones here
-    this.filter = new Component('Filter', {
-      type: new Preset({
-        min: 0,
-        max: 0,
+    this.filter = {
+      name: 'Filter',
+      type: {
         options: ['Low Pass', 'High Pass', 'Band Pass', 'Notch'],
         default: 'Low Pass'
-      }),
-      frequency: new Preset({
+      },
+      frequency: {
         min: 0,
-        max: 0,
-        default: 0
-      })
-    });
+        max: 100,
+        default: 70
+      }
+    }
 
-    this.volume = new Component('Volume', {
-      volume: new Preset({
+    this.volume = {
+      name: 'Volume',
+      volume: {
         min: 0,
         max: 100,
         default: 0
-      })
-    });
+      }
+    };
   }
 
   getDoublePendulumPresets() {
     return {
       theta: [
-        this.oscillator.thetaFirstLeg?.default as number,
-        this.oscillator.thetaSecondLeg?.default as number,
+        this.oscillator.thetaFirstLeg.default,
+        this.oscillator.thetaSecondLeg.default,
       ],
       l: [
-        this.oscillator.lengthFirstLeg?.default as number,
-        this.oscillator.lengthSecondLeg?.default as number,
+        this.oscillator.lengthFirstLeg.default,
+        this.oscillator.lengthSecondLeg.default,
       ],
       m: [
-        this.oscillator.massFirstAnkle?.default as number,
-        this.oscillator.massSecondAnkle?.default as number,
+        this.oscillator.massFirstAnkle.default,
+        this.oscillator.massSecondAnkle.default,
       ],
-      g: this.oscillator.gravitation?.default as number,
+      g: this.oscillator.gravitation.default,
     }
   }
 
@@ -201,4 +200,5 @@ export class Presets {
   getComponentNames() {
     return [this.oscillator.name, this.envelope.name, this.filter.name, this.volume.name]
   }
+
 }

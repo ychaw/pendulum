@@ -14,10 +14,10 @@ interface ComponentProps {
         maxMem: number,
         fadingStart: number,
         strokeWeight: number,
-        drawColor: Array<number>,
+        drawColor: number[],
     }
     readonly pendulumSettings: {
-        drawColor: Array<number>,
+        drawColor: number[],
         legWeight: number,
         ankleWidth: number
     }
@@ -26,7 +26,8 @@ interface ComponentProps {
 export const PendulumVisualization: React.FC<ComponentProps> = (props: ComponentProps) => {
 
     let mem: number[][] = [];
-    let dim: number[] = []
+    let orgDim: number[] = [];
+    let dim: number[] = [];
     let buffer: p5Types.Graphics;
     let padding: number = 70;
 
@@ -34,6 +35,7 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         dim = [canvasParentRef.clientWidth, canvasParentRef.clientHeight];
+        orgDim = dim;
         let cnv = p5.createCanvas(dim[0], dim[1]).parent(canvasParentRef);
 
         cnv.doubleClicked((event) => {
@@ -42,8 +44,10 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
 
         p5.windowResized = () => {
             let newWidth = document.getElementsByClassName('FocusCard').item(0)?.clientWidth as number;
-            if (newWidth !== dim[0]) {
-                dim[0] = newWidth;
+            let newHeight = document.getElementsByClassName('FocusCard').item(0)?.clientHeight as number;
+            if (newWidth !== dim[0] || newHeight !== dim[1]) {
+                dim = [newWidth, newHeight];
+                p5.resizeCanvas(dim[0], dim[1], true);
                 buffer.resizeCanvas(dim[0] - padding, dim[1] - padding, true);
                 buffer.translate(dim[0] / 2, dim[1] / 2);
             }
@@ -72,8 +76,13 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
 
             p5.clear();
 
+            p5.translate(dim[0] / 2, dim[1] / 2);
+
+            p5.scale(dim[0] / orgDim[0]);
+
             // Memory Line/Dots
             if (props.memorySettings.drawMode === 'solidLine') {
+                p5.translate(-dim[0] / 2, -dim[1] / 2);
                 p5.image(buffer, padding / 2, padding / 2);
                 buffer.stroke(props.memorySettings.drawColor);
                 buffer.strokeWeight(props.memorySettings.strokeWeight);
@@ -85,7 +94,6 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
                 if (newLength >= props.memorySettings.maxMem) {
                     mem.shift();
                 }
-                p5.translate(dim[0] / 2, dim[1] / 2);
                 mem.forEach((e) => {
                     let alpha = 255;
                     if (mem.indexOf(e) <= props.memorySettings.fadingStart) {
@@ -106,10 +114,7 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
                 p5.fill(255, 0, 0);
                 p5.circle(dim[0] / 2 + mem[0][0], dim[1] / 2 + mem[0][1], 5);
                 */
-                p5.translate(-dim[0] / 2, -dim[1] / 2);
             }
-
-            p5.translate(dim[0] / 2, dim[1] / 2);
 
             // Legs
             p5.noFill();
