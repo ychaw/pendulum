@@ -1,14 +1,15 @@
 import { Slider, Select, MenuItem } from '@material-ui/core';
 import React from 'react';
+import { IPreset, ITypes } from '../data/Presets';
 
 function OscillatorContent(props: any) {
     let params = Object.keys(props.preset);
     params.shift();
-    let lastParam = params.pop();
+    let lastParam = params.pop() as string;
     let content = [];
     for (let i = 0; i < params.length; i += 2) {
         let param = params.slice(i, i + 2);
-        let p = [props.preset[param[0]], props.preset[param[1]]];
+        let p: IPreset[] = [props.preset[param[0]], props.preset[param[1]]];
         content.push(
             <div className="SettingsContentParameter" key={i}>
                 <h3 className="Oscillator">{param[0].split(/(?=[A-Z])/)[0]}</h3>
@@ -35,7 +36,7 @@ function OscillatorContent(props: any) {
             </div>
         )
     }
-    let lastP = props.preset[lastParam as string];
+    let lastP: IPreset = props.preset[lastParam];
     content.push(
         <div className="SettingsContentParameter" key={params.length}>
             <h3>{lastParam}</h3>
@@ -58,8 +59,8 @@ function EnvelopeContent(props: any) {
     let params = Object.keys(props.preset);
     params.shift()
     return <div className="SettingsContent">{
-        params.map((param: any, i: number) => {
-            let p = props.preset[param]
+        params.map((param: string, i: number) => {
+            let p: IPreset = props.preset[param]
             return (
                 <div className="SettingsContentParameter" key={i}>
                     <h3 className="Envelope">{param.toUpperCase()}</h3>
@@ -81,17 +82,18 @@ function EnvelopeContent(props: any) {
 
 function FilterContent(props: any) {
     let params = Object.keys(props.preset);
-    params.shift()
-    let type = params[0]
-    params.shift()
+    params.shift();
+    let type: ITypes = props.preset[params[0]];
+    let typeName = params[0];
+    params.shift();
     return <div className="SettingsContent">
         <Select
             className="SettingsContentParameter"
-            defaultValue={props.preset.type.default}
-            onChange={(e) => props.handleSliderChange(type, e.target.value)}
+            defaultValue={type.default}
+            onChange={(e) => props.handleSliderChange(typeName, e.target.value)}
         >
             {
-                props.preset[type].options.map((option: string, i: number) => {
+                type.options.map((option: string, i: number) => {
                     return (
                         <MenuItem key={i} value={option}>{option}</MenuItem>
                     )
@@ -100,7 +102,7 @@ function FilterContent(props: any) {
         </Select>
         {
             params.map((param: any, i: number) => {
-                let p = props.preset[param]
+                let p: IPreset = props.preset[param];
                 return (
                     <div className="SettingsContentParameter" key={i}>
                         <h3>{param}</h3>
@@ -121,7 +123,7 @@ function FilterContent(props: any) {
 }
 
 function VolumeContent(props: any) {
-    let p = props.preset.volume;
+    let p: IPreset = props.preset.volume;
     return <div className="SettingsContent">
         <div className="SettingsContentParameter">
             <Slider

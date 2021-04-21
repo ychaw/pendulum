@@ -45,6 +45,7 @@ class App extends React.Component<{}, ComponentState> {
 
     this.setHighlight = this.setHighlight.bind(this);
     this.clearHighlight = this.clearHighlight.bind(this);
+    this.canvasDoubleClicked = this.canvasDoubleClicked.bind(this);
     this.handleOscillatorChange = this.handleOscillatorChange.bind(this);
     this.handleEnvelopeChange = this.handleEnvelopeChange.bind(this);
     this.handleVolumeChange = this.handleVolumeChange.bind(this);
@@ -60,8 +61,10 @@ class App extends React.Component<{}, ComponentState> {
     this.dpv = PendulumVisualization({
       dp: this.doublePendulum,
       memorySettings: this.presets.pvMemorySettings,
-      pendulumSettings: this.presets.pvPendulumSettings
+      pendulumSettings: this.presets.pvPendulumSettings,
+      canvasDoubleClicked: this.canvasDoubleClicked
     });
+    this.doublePendulum.recalcPositions();
 
     // create the audio graph
     this.audioGraph = audioGraph;
@@ -81,15 +84,23 @@ class App extends React.Component<{}, ComponentState> {
     });
   }
 
-  handleOscillatorChange(e: any, newValue: number) {
-    console.log(e, newValue);
+  // testing (if paused --> set Theta Sliders to current pendulum values ==> prevents "jumping" of visualization when slider is changed during pause)
+  canvasDoubleClicked(paused: boolean) {
+    console.log('doubleClicked', paused);
+  }
+
+  handleOscillatorChange(param: string, newValue: number) {
+    this.doublePendulum.setValue(param, newValue);
+    if (param.startsWith('theta') || param.startsWith('length')) {
+      this.doublePendulum.recalcPositions();
+    }
   }
 
   handleEnvelopeChange(e: any, newValue: number) {
     console.log(e, newValue);
   }
 
-  handleFilterChange(e: any, newValue: number) {
+  handleFilterChange(e: any, newValue: number | string) {
     console.log(e, newValue);
   }
 

@@ -7,13 +7,13 @@ interface InitialConditions {
 }
 
 interface Memory {
-    massSum: number;
-    biasedMassSum: number;
-    angleDifference: number;
-    doubleSineAngleDiff: number;
-    cosAngleDiff: number;
-    denFactor: number;
-    velSquaredTimesL: Array<number>;
+  massSum: number;
+  biasedMassSum: number;
+  angleDifference: number;
+  doubleSineAngleDiff: number;
+  cosAngleDiff: number;
+  denFactor: number;
+  velSquaredTimesL: Array<number>;
 }
 
 export class DoublePendulum {
@@ -31,8 +31,8 @@ export class DoublePendulum {
   constructor(init: InitialConditions) {
     const defaults = {
       theta: [
-        Math.PI/4,
-        Math.PI/4,
+        Math.PI / 4,
+        Math.PI / 4,
       ],
       l: [120, 70],
       m: [10, 10],
@@ -62,10 +62,62 @@ export class DoublePendulum {
       velSquaredTimesL: [0, 0],
     };
   }
-  
+
+  resetPhysics() {
+    if (this.ddTheta[0] !== 0) {
+      this.mem.massSum = 0;
+      this.mem.biasedMassSum = 0;
+      this.mem.angleDifference = 0;
+      this.mem.doubleSineAngleDiff = 0;
+      this.mem.cosAngleDiff = 0;
+      this.mem.denFactor = 0;
+      this.mem.velSquaredTimesL = [0, 0];
+      this.dTheta = [0, 0];
+      this.ddTheta = [0, 0];
+    }
+  }
+
+  setValue(param: string, newValue: number) {
+    switch (param) {
+      case 'thetaFirstLeg':
+        this.theta[0] = newValue;
+        this.resetPhysics();
+        break;
+      case 'thetaSecondLeg':
+        this.theta[1] = newValue;
+        this.resetPhysics();
+        break;
+      case 'lengthFirstLeg':
+        this.l[0] = newValue;
+        break;
+      case 'lengthSecondLeg':
+        this.l[1] = newValue;
+        break;
+      case 'massFirstAnkle':
+        this.m[0] = newValue;
+        break;
+      case 'massSecondAnkle':
+        this.m[1] = newValue;
+        break;
+      case 'gravitation':
+        this.g = newValue;
+        break;
+    }
+  }
+
+  recalcPositions() {
+    const { sin, cos } = Math;
+    const { x, y, theta, l } = this;
+    // calculate the new bob positions
+    x[0] = l[0] * sin(theta[0]);
+    y[0] = l[0] * cos(theta[0]);
+    x[1] = x[0] + l[1] * sin(theta[1]);
+    y[1] = y[0] + l[1] * cos(theta[1]);
+  }
+
   tick() {
-    const {sin, cos} = Math;
-    const {x, y, theta, dTheta, ddTheta, l, m, g, mem} = this;
+    const { sin, cos } = Math;
+    const { x, y, theta, dTheta, ddTheta, l, m, g, mem } = this;
 
     // extract repeated calculations
     mem.massSum = m[0] + m[1];
@@ -87,7 +139,7 @@ export class DoublePendulum {
       denFactor,
       velSquaredTimesL,
     } = mem;
-    
+
     // solve for the second derivatives
     // the equations are very long fractions, that's why they were split like this
     const num = [0, 0, 0, 0];
@@ -102,28 +154,28 @@ export class DoublePendulum {
     num[2] = -doubleSineAngleDiff * m[1]
     num[3] = velSquaredTimesL[1] + velSquaredTimesL[0] * cosAngleDiff;
     ddTheta[0] = (num[0] + num[1] + num[2] * num[3]) / den[0];
-    
+
     // for theta 2
     num[0] = doubleSineAngleDiff;
     num[1] = velSquaredTimesL[0] * massSum;
     num[2] = g * massSum * cos(theta[0]);
     num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff;
     ddTheta[1] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
-    
+
     // calculate the new bob positions
     x[0] = l[0] * sin(theta[0]);
     y[0] = l[0] * cos(theta[0]);
-    
+
     x[1] = x[0] + l[1] * sin(theta[1]);
     y[1] = y[0] + l[1] * cos(theta[1]);
-    
+
     // simulate physics for theta 1 and 2
-    for(let i = 0; i < 2; i++) {
+    for (let i = 0; i < 2; i++) {
       dTheta[i] += ddTheta[i];
-        theta[i] += dTheta[i];
-        if (Math.abs(theta[i]) > 2 * Math.PI) {
-            theta[i] += theta[i] > 0 ? -2 * Math.PI : 2 * Math.PI;
-        }
+      theta[i] += dTheta[i];
+      if (Math.abs(theta[i]) > 2 * Math.PI) {
+        theta[i] += theta[i] > 0 ? -2 * Math.PI : 2 * Math.PI;
+      }
     }
   }
 }

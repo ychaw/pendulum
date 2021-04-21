@@ -21,6 +21,7 @@ interface ComponentProps {
         legWeight: number,
         ankleWidth: number
     }
+    canvasDoubleClicked: any
 }
 
 export const PendulumVisualization: React.FC<ComponentProps> = (props: ComponentProps) => {
@@ -31,15 +32,17 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
     let buffer: p5Types.Graphics;
     let padding: number = 70;
 
-    let paused: boolean = false;
+    let paused: boolean = true;
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         dim = [canvasParentRef.clientWidth, canvasParentRef.clientHeight];
         orgDim = dim;
-        let cnv = p5.createCanvas(dim[0], dim[1]).parent(canvasParentRef);
+        let cnv = p5.createCanvas(dim[0], dim[1], 'p2d').parent(canvasParentRef);
 
         cnv.doubleClicked((event) => {
-            paused = !paused
+            paused = !paused;
+            mem = [];
+            props.canvasDoubleClicked(paused);
         })
 
         p5.windowResized = () => {
@@ -62,23 +65,26 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
 
     const draw = (p5: p5Types) => {
 
+        p5.clear();
+        p5.translate(dim[0] / 2, dim[1] / 2);
+        p5.scale(dim[0] / orgDim[0]);
+
+        let x0 = props.dp.x[0];
+        let y0 = props.dp.y[0];
+        let x1 = props.dp.x[1];
+        let y1 = props.dp.y[1];
+
         if (!paused) {
 
-            let px1 = props.dp.x[1];
-            let py1 = props.dp.y[1];
+            let px1 = x1;
+            let py1 = y1;
 
             props.dp.tick();
 
-            let x0 = props.dp.x[0];
-            let y0 = props.dp.y[0];
-            let x1 = props.dp.x[1];
-            let y1 = props.dp.y[1];
-
-            p5.clear();
-
-            p5.translate(dim[0] / 2, dim[1] / 2);
-
-            p5.scale(dim[0] / orgDim[0]);
+            x0 = props.dp.x[0];
+            y0 = props.dp.y[0];
+            x1 = props.dp.x[1];
+            y1 = props.dp.y[1];
 
             // Memory Line/Dots
             if (props.memorySettings.drawMode === 'solidLine') {
@@ -110,27 +116,23 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
                         p5.line(previous[0], previous[1], e[0], e[1]);
                     }
                 });
-                /* Endpunkt hervorheben
-                p5.fill(255, 0, 0);
-                p5.circle(dim[0] / 2 + mem[0][0], dim[1] / 2 + mem[0][1], 5);
-                */
             }
+        }
+        // Legs
+        p5.noFill();
+        p5.stroke(props.pendulumSettings.drawColor);
+        p5.strokeWeight(props.pendulumSettings.legWeight);
+        p5.line(0, 0, x0, y0);
+        p5.line(x0, y0, x1, y1);
 
-            // Legs
-            p5.noFill();
-            p5.stroke(props.pendulumSettings.drawColor);
-            p5.strokeWeight(props.pendulumSettings.legWeight);
-            p5.line(0, 0, x0, y0);
-            p5.line(x0, y0, x1, y1);
+        // Ankles
+        p5.fill(props.pendulumSettings.drawColor);
+        p5.noStroke();
+        p5.circle(0, 0, props.pendulumSettings.ankleWidth);
+        p5.circle(x0, y0, props.pendulumSettings.ankleWidth);
+        p5.circle(x1, y1, props.pendulumSettings.ankleWidth);
 
-            // Ankles
-            p5.fill(props.pendulumSettings.drawColor);
-            p5.noStroke();
-            p5.circle(0, 0, props.pendulumSettings.ankleWidth);
-            p5.circle(x0, y0, props.pendulumSettings.ankleWidth);
-            p5.circle(x1, y1, props.pendulumSettings.ankleWidth);
-        };
-    };
+    }
 
     return <Sketch setup={setup} draw={draw} className="pendulum" />;
 };

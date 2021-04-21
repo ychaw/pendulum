@@ -229,6 +229,8 @@ h3.HeaderText {
 @media only screen and (max-width: 800px) {
 
   .App {
+    max-height: 2000px;
+    height: auto;
     max-width: 500px;
     min-width: 300px;
     overflow-x: hidden;

@@ -1,9 +1,14 @@
-interface IPreset {
+export interface IPreset {
   readonly step?: number;
   readonly name?: string;
   readonly min: number;
   readonly max: number;
   readonly default: number;
+}
+
+export interface ITypes {
+  readonly options: string[];
+  readonly default: string;
 }
 
 export class Presets {
@@ -45,7 +50,7 @@ export class Presets {
   };
   readonly filter: {
     readonly name: string;
-    readonly type: { readonly options: string[]; readonly default: string; };
+    readonly type: ITypes;
     readonly frequency: IPreset;
   };
   readonly volume: {
@@ -102,12 +107,12 @@ export class Presets {
       },
       massFirstAnkle: {
         min: 0,
-        max: 20,
+        max: 40,
         default: 10
       },
       massSecondAnkle: {
         min: 0,
-        max: 20,
+        max: 40,
         default: 10
       },
       gravitation: {
