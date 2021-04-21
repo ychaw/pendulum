@@ -52,6 +52,7 @@ export class Presets {
     readonly name: string;
     readonly type: ITypes;
     readonly frequency: IPreset;
+    readonly resonance: IPreset;
   };
   readonly volume: {
     readonly name: string;
@@ -87,13 +88,13 @@ export class Presets {
         step: 0.01,
         min: 0,
         max: Math.round(Math.PI * 2 * 100) / 100,
-        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
+        default: 3 // Math.round(Math.random() * Math.PI * 2 * 100) / 100
       },
       thetaSecondLeg: {
         step: 0.01,
         min: 0,
         max: Math.round(Math.PI * 2 * 100) / 100,
-        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
+        default: 3 // Math.round(Math.random() * Math.PI * 2 * 100) / 100
       },
       lengthFirstLeg: {
         min: 10,
@@ -106,18 +107,18 @@ export class Presets {
         default: 160
       },
       massFirstAnkle: {
-        min: 0,
+        min: 1,
         max: 40,
         default: 10
       },
       massSecondAnkle: {
-        min: 0,
+        min: 1,
         max: 40,
         default: 10
       },
       gravitation: {
         step: 0.1,
-        min: 0,
+        min: 0.1,
         max: 2,
         default: 0.8
       },
@@ -159,6 +160,11 @@ export class Presets {
         min: 0,
         max: 100,
         default: 70
+      },
+      resonance: {
+        min: 0,
+        max: 100,
+        default: 50
       }
     }
 

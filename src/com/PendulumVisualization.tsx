@@ -61,13 +61,23 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
         buffer = p5.createGraphics(dim[0] - padding, dim[1] - padding);
         buffer.background(51);
         buffer.translate(dim[0] / 2, dim[1] / 2);
+
+        p5.textFont('Consolas');
     };
 
     const draw = (p5: p5Types) => {
 
         p5.clear();
-        p5.translate(dim[0] / 2, dim[1] / 2);
+
+        p5.text('Theta1:    ' + props.dp.theta[0].toString().replace(/^(?=\d)/, ' '), 10, 20);
+        p5.text('Theta2:    ' + props.dp.theta[1].toString().replace(/^(?=\d)/, ' '), 10, 40);
+        p5.text('D Theta1:  ' + props.dp.dTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 80);
+        p5.text('D Theta2:  ' + props.dp.dTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 100);
+        p5.text('DD Theta1: ' + props.dp.ddTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 140);
+        p5.text('DD Theta2: ' + props.dp.ddTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 160);
+
         p5.scale(dim[0] / orgDim[0]);
+        p5.translate(dim[0] / 2, dim[1] / 2);
 
         let x0 = props.dp.x[0];
         let y0 = props.dp.y[0];
@@ -131,7 +141,6 @@ export const PendulumVisualization: React.FC<ComponentProps> = (props: Component
         p5.circle(0, 0, props.pendulumSettings.ankleWidth);
         p5.circle(x0, y0, props.pendulumSettings.ankleWidth);
         p5.circle(x1, y1, props.pendulumSettings.ankleWidth);
-
     }
 
     return <Sketch setup={setup} draw={draw} className="pendulum" />;
