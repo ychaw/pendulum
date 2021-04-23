@@ -173,9 +173,14 @@ export class DoublePendulum {
     for (let i = 0; i < 2; i++) {
       dTheta[i] += ddTheta[i];
       theta[i] += dTheta[i];
-      if (Math.abs(theta[i]) > 2 * Math.PI) {
-        theta[i] += theta[i] > 0 ? -2 * Math.PI : 2 * Math.PI;
+
+      theta[i] %= (2 * Math.PI);
+      if (theta[i] < 0) {
+        theta[i] += 2 * Math.PI;
       }
+
+      // Optional dampening function
+      // dTheta[i] *= 0.9975
     }
   }
 }

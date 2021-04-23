@@ -3,57 +3,96 @@ import React from 'react';
 import { IPreset, ITypes } from '../data/Presets';
 import { LP, HP, BP, NOTCH } from '../data/Constants';
 
-function OscillatorContent(props: any) {
-    let params = Object.keys(props.preset);
-    params.shift();
-    let lastParam = params.pop() as string;
-    let content = [];
-    for (let i = 0; i < params.length; i += 2) {
-        let param = params.slice(i, i + 2);
-        let p: IPreset[] = [props.preset[param[0]], props.preset[param[1]]];
+class OscillatorContent extends React.Component<{ preset: any, handleSliderChange: any, theta1Value: number, theta2Value: number, disabledTheta: boolean }, { theta1Value: number, theta2Value: number }> {
+
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            theta1Value: props.theta1Value,
+            theta2Value: props.theta2Value
+        }
+    }
+
+    changeValue(param: string, newValue: number) {
+        if (param.startsWith('thetaFirst')) {
+            this.setState({
+                theta1Value: newValue
+            });
+        } else {
+            this.setState({
+                theta2Value: newValue
+            });
+        }
+        this.props.handleSliderChange(param, newValue);
+    }
+
+    // Trust me, I'm not happy about it either
+    UNSAFE_componentWillReceiveProps(props: any) {
+        if (props.theta1Value !== this.props.theta1Value && props.theta2Value !== this.props.theta2Value) {
+            this.setState({
+                theta1Value: props.theta1Value,
+                theta2Value: props.theta2Value,
+            });
+        }
+    }
+
+    render() {
+
+        let params = Object.keys(this.props.preset);
+        params.shift();
+        let lastParam = params.pop() as string;
+        let content = [];
+        for (let i = 0; i < params.length; i += 2) {
+            let param = params.slice(i, i + 2);
+            let p: IPreset[] = [this.props.preset[param[0]], this.props.preset[param[1]]];
+            content.push(
+                <div className="SettingsContentParameter" key={i}>
+                    <h3 className="Oscillator">{param[0].split(/(?=[A-Z])/)[0]}</h3>
+                    <Slider
+                        className="ParameterSlider"
+                        id="first"
+                        value={param[0].startsWith('theta') ? this.state.theta1Value : undefined}
+                        disabled={param[0].startsWith('theta') ? this.props.disabledTheta : undefined}
+                        defaultValue={p[0].default}
+                        step={p[0].step}
+                        min={p[0].min}
+                        max={p[0].max}
+                        onChange={(e, newValue) => this.changeValue(param[0], newValue as number)}
+                        valueLabelDisplay="auto"
+                    />
+                    <Slider
+                        className="ParameterSlider"
+                        id="second"
+                        value={param[1].startsWith('theta') ? this.state.theta2Value : undefined}
+                        disabled={param[1].startsWith('theta') ? this.props.disabledTheta : undefined}
+                        defaultValue={p[1].default}
+                        step={p[1].step}
+                        min={p[1].min}
+                        max={p[1].max}
+                        onChange={(e, newValue) => this.changeValue(param[1], newValue as number)}
+                        valueLabelDisplay="auto"
+                    />
+                </div>
+            )
+        }
+        let lastP: IPreset = this.props.preset[lastParam];
         content.push(
-            <div className="SettingsContentParameter" key={i}>
-                <h3 className="Oscillator">{param[0].split(/(?=[A-Z])/)[0]}</h3>
+            <div className="SettingsContentParameter" key={params.length}>
+                <h3>{lastParam}</h3>
                 <Slider
                     className="ParameterSlider"
-                    id="first"
-                    defaultValue={p[0].default}
-                    step={p[0].step}
-                    min={p[0].min}
-                    max={p[0].max}
-                    onChange={(e, newValue) => props.handleSliderChange(param[0], newValue)}
-                    valueLabelDisplay="auto"
-                />
-                <Slider
-                    className="ParameterSlider"
-                    id="second"
-                    defaultValue={p[1].default}
-                    step={p[1].step}
-                    min={p[1].min}
-                    max={p[1].max}
-                    onChange={(e, newValue) => props.handleSliderChange(param[1], newValue)}
+                    defaultValue={lastP.default}
+                    step={lastP.step}
+                    min={lastP.min}
+                    max={lastP.max}
+                    onChange={(e, newValue) => this.props.handleSliderChange(lastParam, newValue)}
                     valueLabelDisplay="auto"
                 />
             </div>
         )
-    }
-    let lastP: IPreset = props.preset[lastParam];
-    content.push(
-        <div className="SettingsContentParameter" key={params.length}>
-            <h3>{lastParam}</h3>
-            <Slider
-                className="ParameterSlider"
-                defaultValue={lastP.default}
-                step={lastP.step}
-                min={lastP.min}
-                max={lastP.max}
-                onChange={(e, newValue) => props.handleSliderChange(lastParam, newValue)}
-                valueLabelDisplay="auto"
-            />
-        </div>
-    )
 
-    return <div className="SettingsContent">{content}</div>
+        return <div className="SettingsContent">{content}</div>
+    }
 }
 
 function EnvelopeContent(props: any) {
@@ -150,21 +189,14 @@ function VolumeContent(props: any) {
 
 
 
-export default class SettingsCards extends React.Component<{ classNames: any, presets: any, setHighlight: any, clearHighlight: any, sliderChanges: any }, {}> {
-
-    prop: any
-
-    constructor(props: any) {
-        super(props);
-        this.prop = props
-    }
+export default class SettingsCards extends React.Component<{ classNames: any, presets: any, setHighlight: any, clearHighlight: any, sliderChanges: any, theta1Value: number, theta2Value: number, disabledTheta: boolean }, {}> {
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
-        return false
+        return (nextProps.theta1Value !== this.props.theta1Value && nextProps.theta2Value !== this.props.theta2Value) || nextProps.diabledTheta !== this.props.disabledTheta
     }
 
     render() {
-        let props = this.prop
+        let props = this.props
         return (
             <div className="SettingsCards"> {
                 props.classNames.map((className: string, i: number) => {
@@ -180,7 +212,7 @@ export default class SettingsCards extends React.Component<{ classNames: any, pr
                             <h2 className="SettingsHeader">{className}</h2>
                             {
                                 {
-                                    'Oscillator': <OscillatorContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,
+                                    'Oscillator': <OscillatorContent preset={preset} handleSliderChange={props.sliderChanges[className]} theta1Value={props.theta1Value} theta2Value={props.theta2Value} disabledTheta={props.disabledTheta} />,
                                     'Envelope': <EnvelopeContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,
                                     'Filter': <FilterContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,
                                     'Volume': <VolumeContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,

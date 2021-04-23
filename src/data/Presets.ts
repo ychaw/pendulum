@@ -1,4 +1,4 @@
-import {LP, HP, BP, NOTCH, DSPZERO, VALUERES, TWENTYK} from './Constants';
+import { LP, HP, BP, NOTCH, DSPZERO, VALUERES, TWENTYK } from './Constants';
 
 export interface IPreset {
   readonly step?: number;
@@ -90,13 +90,13 @@ export class Presets {
         step: 0.01,
         min: 0,
         max: Math.round(Math.PI * 2 * 100) / 100,
-        default: 3 // Math.round(Math.random() * Math.PI * 2 * 100) / 100
+        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
       },
       thetaSecondLeg: {
         step: 0.01,
         min: 0,
         max: Math.round(Math.PI * 2 * 100) / 100,
-        default: 3 // Math.round(Math.random() * Math.PI * 2 * 100) / 100
+        default: Math.round(Math.random() * Math.PI * 2 * 100) / 100
       },
       lengthFirstLeg: {
         min: 10,
@@ -154,7 +154,7 @@ export class Presets {
     this.filter = {
       name: 'Filter',
       type: {
-          options: [LP, HP, BP, NOTCH],
+        options: [LP, HP, BP, NOTCH],
         default: LP
       },
       // Cutoff frequency or the point where the filters effect becomes audible
