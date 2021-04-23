@@ -130,22 +130,22 @@ export class Presets {
     this.envelope = {
       name: 'Envelope',
       a: {
-        min: DSPZERO,
+        min: 5,
         max: 2000,
         default: 20
       },
       d: {
-        min: DSPZERO,
+        min: 5,
         max: 2000,
         default: 140
       },
       s: {
-        min: DSPZERO,
+        min: 5,
         max: VALUERES,
         default: 600
       },
       r: {
-        min: DSPZERO,
+        min: 5,
         max: 2000,
         default: 200
       }
