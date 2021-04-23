@@ -1,6 +1,7 @@
 import { Slider, Select, MenuItem } from '@material-ui/core';
 import React from 'react';
 import { IPreset, ITypes } from '../data/Presets';
+import { LP, HP, BP, NOTCH } from '../data/Constants';
 
 function OscillatorContent(props: any) {
     let params = Object.keys(props.preset);
@@ -86,6 +87,14 @@ function FilterContent(props: any) {
     let type: ITypes = props.preset[params[0]];
     let typeName = params[0];
     params.shift();
+
+    const filterDisplayNames = new Map([
+        [LP, 'Low Pass'],
+        [HP, 'High Pass'],
+        [BP, 'Band Pass'],
+        [NOTCH, 'Notch'],
+    ]);
+
     return <div className="SettingsContent">
         <Select
             className="SettingsContentParameter"
@@ -95,7 +104,7 @@ function FilterContent(props: any) {
             {
                 type.options.map((option: string, i: number) => {
                     return (
-                        <MenuItem key={i} value={option}>{option}</MenuItem>
+                        <MenuItem key={i} value={option}>{filterDisplayNames.get(option)}</MenuItem>
                     )
                 })
             }

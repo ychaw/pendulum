@@ -43,13 +43,6 @@ class App extends React.Component<{}, ComponentState> {
     this.presets = new Presets();
     this.componentNames = this.presets.getComponentNames();
 
-    this.setHighlight = this.setHighlight.bind(this);
-    this.clearHighlight = this.clearHighlight.bind(this);
-    this.canvasDoubleClicked = this.canvasDoubleClicked.bind(this);
-    this.handleOscillatorChange = this.handleOscillatorChange.bind(this);
-    this.handleEnvelopeChange = this.handleEnvelopeChange.bind(this);
-    this.handleVolumeChange = this.handleVolumeChange.bind(this);
-
     this.state = {
       visualsOrder: this.presets.visualsOrder,
       highlighted: ''
@@ -70,7 +63,7 @@ class App extends React.Component<{}, ComponentState> {
     this.audioGraph = audioGraph;
   }
 
-  setHighlight(className: string) {
+  setHighlight = (className: string) => {
     this.setState((state) => {
       return {
         highlighted: state.visualsOrder[className]
@@ -78,34 +71,40 @@ class App extends React.Component<{}, ComponentState> {
     });
   }
 
-  clearHighlight(e: any) {
+  clearHighlight = (e: any) => {
     this.setState({
       highlighted: ''
     });
   }
 
   // testing (if paused --> set Theta Sliders to current pendulum values ==> prevents "jumping" of visualization when slider is changed during pause)
-  canvasDoubleClicked(paused: boolean) {
+  canvasDoubleClicked = (paused: boolean) => {
     console.log('doubleClicked', paused);
   }
 
-  handleOscillatorChange(param: string, newValue: number) {
+  handleOscillatorChange = (param: string, newValue: number) => {
     this.doublePendulum.setValue(param, newValue);
     if (param.startsWith('theta') || param.startsWith('length')) {
       this.doublePendulum.recalcPositions();
     }
   }
 
-  handleEnvelopeChange(e: any, newValue: number) {
-    console.log(e, newValue);
+  handleEnvelopeChange = (e: any, newValue: number) => {
+      this.audioGraph.setEnvelope({
+          identifier: e,
+          value: newValue,
+      });
   }
 
-  handleFilterChange(e: any, newValue: number | string) {
-    console.log(e, newValue);
+  handleFilterChange = (e: any, newValue: number | string) => {
+      this.audioGraph.setFilter({
+          identifier: e,
+          value: newValue,
+      });
   }
 
-  handleVolumeChange(e: any, newValue: number) {
-    this.audioGraph.setGain(newValue);
+  handleVolumeChange = (e: any, newValue: number) => {
+    this.audioGraph.setMasterGain(newValue);
   }
 
   render() {
