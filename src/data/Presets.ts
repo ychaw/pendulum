@@ -1,3 +1,5 @@
+import {LP, HP, BP, NOTCH, DSPZERO, VALUERES, TWENTYK} from './Constants';
+
 export interface IPreset {
   readonly step?: number;
   readonly name?: string;
@@ -124,56 +126,56 @@ export class Presets {
       },
     }
 
-    // big questions here... ;)
+    // All values describe time in ms, except s which is a level of volume
     this.envelope = {
       name: 'Envelope',
       a: {
-        min: 0,
-        max: 100,
+        min: DSPZERO,
+        max: 2000,
         default: 20
       },
       d: {
-        min: 0,
-        max: 100,
-        default: 40
+        min: DSPZERO,
+        max: 2000,
+        default: 140
       },
       s: {
-        min: 0,
-        max: 100,
-        default: 30
+        min: DSPZERO,
+        max: VALUERES,
+        default: 600
       },
       r: {
-        min: 0,
-        max: 100,
-        default: 60
+        min: DSPZERO,
+        max: 2000,
+        default: 200
       }
     }
 
-    // ...and even bigger ones here
     this.filter = {
       name: 'Filter',
       type: {
-        options: ['Low Pass', 'High Pass', 'Band Pass', 'Notch'],
-        default: 'Low Pass'
+          options: [LP, HP, BP, NOTCH],
+        default: LP
       },
+      // Cutoff frequency or the point where the filters effect becomes audible
       frequency: {
-        min: 0,
-        max: 100,
-        default: 70
+        min: 20,
+        max: TWENTYK,
+        default: 200
       },
       resonance: {
-        min: 0,
-        max: 100,
-        default: 50
+        min: DSPZERO,
+        max: VALUERES,
+        default: 100
       }
     }
 
     this.volume = {
       name: 'Volume',
       volume: {
-        min: 0,
-        max: 100,
-        default: 0
+        min: DSPZERO,
+        max: VALUERES,
+        default: DSPZERO
       }
     };
   }
