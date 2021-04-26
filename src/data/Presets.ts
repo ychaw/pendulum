@@ -6,6 +6,7 @@ export interface IPreset {
   readonly min: number;
   readonly max: number;
   readonly default: number;
+  readonly valueLabelFormat?: any;
 }
 
 export interface ITypes {
@@ -175,7 +176,11 @@ export class Presets {
       volume: {
         min: DSPZERO,
         max: VALUERES,
-        default: DSPZERO
+        default: DSPZERO,
+        step: 10,
+        valueLabelFormat: (value: number) => {
+          return value === DSPZERO ? 0 : value / 10
+        }
       }
     };
   }

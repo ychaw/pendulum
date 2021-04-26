@@ -4,6 +4,7 @@ import Visualizations from './com/Visualizations'
 import SettingsCards from './com/SettingsCards';
 import { DoublePendulum } from './sim/double-pendulum';
 import PendulumVisualization from './com/PendulumVisualization';
+import EnvelopeVisualization from './com/EnvelopeVisualization';
 import { Presets } from './data/Presets';
 import { audioGraph } from './dsp/audio-graph';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -29,6 +30,10 @@ interface ComponentState {
   theta1Value: number
   theta2Value: number
   disabledTheta: boolean
+  envelopeA: number,
+  envelopeD: number,
+  envelopeS: number,
+  envelopeR: number,
 }
 
 class App extends React.Component<{}, ComponentState> {
@@ -51,7 +56,11 @@ class App extends React.Component<{}, ComponentState> {
       highlighted: '',
       theta1Value: this.presets.oscillator.thetaFirstLeg.default,
       theta2Value: this.presets.oscillator.thetaSecondLeg.default,
-      disabledTheta: false
+      disabledTheta: false,
+      envelopeA: (this.presets.envelope.a.default / this.presets.envelope.a.max) * 100,
+      envelopeD: (this.presets.envelope.d.default / this.presets.envelope.d.max) * 100,
+      envelopeS: (this.presets.envelope.s.default / this.presets.envelope.s.max) * 100,
+      envelopeR: (this.presets.envelope.r.default / this.presets.envelope.r.max) * 100,
     }
 
     this.doublePendulum = new DoublePendulum(
@@ -113,6 +122,20 @@ class App extends React.Component<{}, ComponentState> {
       identifier: e,
       value: newValue,
     });
+    switch (e) {
+      case 'a':
+        this.setState({ envelopeA: (newValue / this.presets.envelope.a.max) * 100 });
+        break;
+      case 'd':
+        this.setState({ envelopeD: (newValue / this.presets.envelope.d.max) * 100 });
+        break;
+      case 's':
+        this.setState({ envelopeS: (newValue / this.presets.envelope.s.max) * 100 });
+        break;
+      case 'r':
+        this.setState({ envelopeR: (newValue / this.presets.envelope.r.max) * 100 });
+        break;
+    }
   }
 
   handleFilterChange = (e: any, newValue: number | string) => {
@@ -137,6 +160,14 @@ class App extends React.Component<{}, ComponentState> {
           <Visualizations
             highlighted={this.state.highlighted}
             dpv={this.dpv}
+            envelopeVisualization={
+              <EnvelopeVisualization
+                a={this.state.envelopeA}
+                d={this.state.envelopeD}
+                s={this.state.envelopeS}
+                r={this.state.envelopeR}
+              />
+            }
           />
           <SettingsCards
             classNames={this.componentNames}

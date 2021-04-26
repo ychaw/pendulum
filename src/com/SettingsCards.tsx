@@ -18,7 +18,7 @@ class OscillatorContent extends React.Component<{ preset: any, handleSliderChang
             this.setState({
                 theta1Value: newValue
             });
-        } else {
+        } else if (param.startsWith('thetaSecond')) {
             this.setState({
                 theta2Value: newValue
             });
@@ -180,6 +180,7 @@ function VolumeContent(props: any) {
                 step={p.step}
                 min={p.min}
                 max={p.max}
+                valueLabelFormat={p.valueLabelFormat}
                 onChange={(e, newValue) => props.handleSliderChange(props.preset.name, newValue)}
                 valueLabelDisplay="auto"
             />
