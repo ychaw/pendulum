@@ -122,7 +122,7 @@
 /* ================================================================================================ */
 
 .HeaderText {
-  font-family: Raleway;
+  font-family: 'Raleway';
   font-style: normal;
   font-weight: normal;
   margin-top: auto;
@@ -143,13 +143,14 @@ h3.HeaderText {
   font-size: 18px;
   margin-left: auto;
   margin-right: 30px;
+  letter-spacing: 0.06rem;
 }
 
 /* ================================================================================================ */
 
 
 .SettingsHeader {
-  font-family: Raleway;
+  font-family: 'Raleway';
   font-style: normal;
   font-weight: normal;
   font-size: 20px;
@@ -187,7 +188,7 @@ h3.HeaderText {
   margin-bottom: auto;
   margin-left: 0;
   margin-right: 30px;
-  font-family: Raleway;
+  font-family: 'Raleway';
   font-style: normal;
   font-weight: normal;
   font-size: 20px;

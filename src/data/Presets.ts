@@ -133,12 +133,12 @@ export class Presets {
       a: {
         min: 5,
         max: 2000,
-        default: 20
+        default: 400
       },
       d: {
         min: 5,
         max: 2000,
-        default: 140
+        default: 500
       },
       s: {
         min: 5,
@@ -148,7 +148,7 @@ export class Presets {
       r: {
         min: 5,
         max: 2000,
-        default: 200
+        default: 300
       }
     }
 

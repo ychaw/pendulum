@@ -71,11 +71,8 @@ export default class PendulumVisualization extends React.Component<ComponentProp
             }
         }
 
-        console.log(this.props.dp.theta);
-
         this.buffer = p5.createGraphics(this.dim[0] - this.padding, this.dim[1] - this.padding);
-        this.buffer.background(51);
-        this.buffer.translate(this.dim[0] / 2, this.dim[1] / 2);
+        this.buffer.translate(this.buffer.width / 2, this.buffer.height / 2);
 
         p5.textFont('Consolas');
     }
@@ -83,13 +80,6 @@ export default class PendulumVisualization extends React.Component<ComponentProp
     draw = (p5: p5Types) => {
 
         p5.clear();
-
-        p5.text('Theta1:    ' + this.props.dp.theta[0].toString().replace(/^(?=\d)/, ' '), 10, 20);
-        p5.text('Theta2:    ' + this.props.dp.theta[1].toString().replace(/^(?=\d)/, ' '), 10, 40);
-        p5.text('D Theta1:  ' + this.props.dp.dTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 80);
-        p5.text('D Theta2:  ' + this.props.dp.dTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 100);
-        p5.text('DD Theta1: ' + this.props.dp.ddTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 140);
-        p5.text('DD Theta2: ' + this.props.dp.ddTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 160);
 
         p5.scale(this.dim[0] / this.orgDim[0]);
         p5.translate(this.dim[0] / 2, this.dim[1] / 2);
@@ -100,7 +90,6 @@ export default class PendulumVisualization extends React.Component<ComponentProp
         let y1 = this.props.dp.y[1];
 
         if (!this.paused) {
-
 
             let px1 = x1;
             let py1 = y1;
@@ -114,12 +103,11 @@ export default class PendulumVisualization extends React.Component<ComponentProp
 
             // Memory Line/Dots
             if (this.props.memorySettings.drawMode === 'solidLine') {
-                p5.translate(-this.dim[0] / 2, -this.dim[1] / 2);
-                p5.image(this.buffer, this.padding / 2, this.padding / 2);
+                p5.image(this.buffer, - this.dim[0] / 2 + this.padding / 2, - this.dim[1] / 2 + this.padding / 2);
                 this.buffer.stroke(this.props.memorySettings.drawColor);
                 this.buffer.strokeWeight(this.props.memorySettings.strokeWeight);
                 if (p5.frameCount > 1) {
-                    this.buffer.line(px1 - this.padding / 2, py1 - this.padding / 2, x1 - this.padding / 2, y1 - this.padding / 2);
+                    this.buffer.line(px1, py1, x1, y1);
                 }
             } else if (this.props.memorySettings.drawMode === 'dots' || this.props.memorySettings.drawMode === 'fadingLine') {
                 let newLength = this.mem.push([x1, y1]);
@@ -157,6 +145,15 @@ export default class PendulumVisualization extends React.Component<ComponentProp
         p5.circle(0, 0, this.props.pendulumSettings.ankleWidth);
         p5.circle(x0, y0, this.props.pendulumSettings.ankleWidth);
         p5.circle(x1, y1, this.props.pendulumSettings.ankleWidth);
+
+        // Debug Text
+        p5.translate(-this.dim[0] / 2, -this.dim[1] / 2);
+        p5.text('Theta1:    ' + this.props.dp.theta[0].toString().replace(/^(?=\d)/, ' '), 10, 20);
+        p5.text('Theta2:    ' + this.props.dp.theta[1].toString().replace(/^(?=\d)/, ' '), 10, 40);
+        p5.text('D Theta1:  ' + this.props.dp.dTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 80);
+        p5.text('D Theta2:  ' + this.props.dp.dTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 100);
+        p5.text('DD Theta1: ' + this.props.dp.ddTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 140);
+        p5.text('DD Theta2: ' + this.props.dp.ddTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 160);
     }
 
     render() {
