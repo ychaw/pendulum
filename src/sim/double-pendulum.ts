@@ -139,19 +139,6 @@ export class DoublePendulum {
 
       this.recalcPositions();
 
-      // simulate physics for theta 1 and 2
-      for (let i = 0; i < 2; i++) {
-        this.dTheta[i] += this.ddTheta[i];
-        this.theta[i] += this.dTheta[i];
-
-        this.theta[i] %= (2 * Math.PI);
-        if (this.theta[i] < 0) {
-            this.theta[i] += 2 * Math.PI;
-        }
-
-        // Optional dampening function
-        // dTheta[i] *= 0.9975
-      }
   }
 
     advanceState(prev: PendulumState): PendulumState {
@@ -203,6 +190,20 @@ export class DoublePendulum {
         num[2] = g * massSum * cos(theta[0]);
         num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff;
         ddTheta[1] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
+
+        // simulate physics for theta 1 and 2
+        for (let i = 0; i < 2; i++) {
+            dTheta[i] += ddTheta[i];
+            theta[i] += dTheta[i];
+
+            theta[i] %= (2 * Math.PI);
+            if (theta[i] < 0) {
+                theta[i] += 2 * Math.PI;
+            }
+
+            // Optional dampening function
+            // dTheta[i] *= 0.9975
+        }
 
         return next;
     }

@@ -1,5 +1,7 @@
 import {A, D, S, R, LP, HP, BP, NOTCH, TYPE, FREQ, RES, PARAM_SMOOTHING, DSPZERO, VALUERES} from '../data/Constants';
 import { Presets } from '../data/Presets';
+import { DoublePendulum, DoublePendulumSingleton } from '../sim/double-pendulum';
+import FFT from 'fft.js';
 const Preset = new Presets();
 
 interface AudioNodes {
@@ -38,6 +40,9 @@ class AudioGraph {
     audioNodes: AudioNodes;
     envelope: ADSREnvelope;
     envelopeTimerID: any;
+    pendulum: DoublePendulum;
+    pendulumBuffer: Float64Array;
+    fft: FFT;
 
     constructor() {
         // create context
@@ -60,8 +65,12 @@ class AudioGraph {
                 this.audioContext.currentTime,
             ],
         };
+        this.pendulum = DoublePendulumSingleton;
+
+        this.pendulumBuffer = new Float64Array(4096);
+        this.fft = new FFT(this.pendulumBuffer.length);
         // Set oscillator to saw for testing
-        this.audioNodes.oscillator.type = 'sawtooth';
+        this.setOscillatorWave();
 
         this.initSmoothTransitions();
         this.connectNodes();
@@ -107,7 +116,6 @@ class AudioGraph {
 
     loopEnvelope = () => {
         const { a, d, s, r } = this.envelope;
-        const lookahead : number = 25; // in ms
         if(this.envelope.timings[this.envelope.stage] <= this.audioContext.currentTime) {
             switch (this.envelope.stage) {
                 case 0:
@@ -173,6 +181,41 @@ class AudioGraph {
     keepValuePositive(value: number) {
         if (value < DSPZERO) value = DSPZERO;
         return value;
+    }
+
+    fillBuffer(buffer: Float64Array, pendulum: DoublePendulum): void {
+        const initialState = pendulum.getPendulumState();
+        let lastState = { ...initialState };
+        // fill the buffer with data 'from the future'
+        for(let index = 0; index < buffer.length; index++) {
+            const x = lastState.l[0] * Math.sin(lastState.theta[0]);
+            // use x[1] as value
+            buffer[index] = x + lastState.l[1] * Math.sin(lastState.theta[1]);
+            lastState = pendulum.advanceState(lastState);
+        }
+        // return the pendulum to its original state
+        pendulum.resetPendulumState(initialState);
+    }
+
+    setOscillatorWave(): void {
+        this.fillBuffer(this.pendulumBuffer, this.pendulum);
+        // fourier transform the buffer contents
+        const out = this.fft.createComplexArray();
+        this.fft.realTransform(out, this.pendulumBuffer);
+
+        // split real and imaginary parts
+        const real = new Float32Array(this.pendulumBuffer.length);
+        const imag = new Float32Array(this.pendulumBuffer.length);
+
+        for(let i = 0; i < real.length; i++) {
+            real[i] = out[i * 2];
+            imag[i] = out[1 + i * 2];
+        }
+
+        // build a wave from real and imaginary parts
+        const wave = this.audioContext.createPeriodicWave(real, imag);
+        this.audioNodes.oscillator.setPeriodicWave(wave);
+        // this.audioNodes.oscillator.type = 'sine';
     }
 }
 
