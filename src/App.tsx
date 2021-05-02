@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Visualizations from './com/Visualizations'
 import SettingsCards from './com/SettingsCards';
-import { DoublePendulum } from './sim/double-pendulum';
+import { DoublePendulum, DoublePendulumSingleton } from './sim/double-pendulum';
 import PendulumVisualization from './com/PendulumVisualization';
 import EnvelopeVisualization from './com/EnvelopeVisualization';
 import { Presets } from './data/Presets';
@@ -63,10 +63,7 @@ class App extends React.Component<{}, ComponentState> {
       envelopeR: (this.presets.envelope.r.default / this.presets.envelope.r.max) * 100,
     }
 
-    this.doublePendulum = new DoublePendulum(
-      this.presets.getDoublePendulumPresets()
-    );
-
+    this.doublePendulum = DoublePendulumSingleton;
     this.dpv = <PendulumVisualization
       dp={this.doublePendulum}
       memorySettings={this.presets.pvMemorySettings}
