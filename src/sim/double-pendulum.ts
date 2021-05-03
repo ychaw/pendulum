@@ -117,7 +117,7 @@ export class DoublePendulum {
     }
   }
 
-    recalcPositions(): void {
+  recalcPositions(): void {
     const { sin, cos } = Math;
     const { x, y, theta, l } = this;
     // calculate the new bob positions
@@ -127,110 +127,119 @@ export class DoublePendulum {
     y[1] = y[0] + l[1] * cos(theta[1]);
   }
 
-    tick(): void {
-      const nextState = this.advanceState(this.getPendulumState());
-      this.theta = nextState.theta;
-      this.dTheta = nextState.dTheta;
-      this.ddTheta = nextState.ddTheta;
-      this.l = nextState.l;
-      this.m = nextState.m;
-      this.g = nextState.g;
+  tick(): void {
+    const nextState = this.advanceState(this.getPendulumState());
+    this.theta = nextState.theta;
+    this.dTheta = nextState.dTheta;
+    this.ddTheta = nextState.ddTheta;
+    this.l = nextState.l;
+    this.m = nextState.m;
+    this.g = nextState.g;
 
 
-      this.recalcPositions();
+    this.recalcPositions();
 
   }
 
-    advanceState(prev: PendulumState): PendulumState {
-        const next = { ...prev };
+  advanceState(prev: PendulumState): PendulumState {
+    const next = { ...prev };
 
-        const { sin, cos } = Math;
-        const { theta, dTheta, ddTheta, l, m, g } = next;
-        const { mem } = this;
+    const { sin, cos } = Math;
+    const { theta, dTheta, ddTheta, l, m, g } = next;
+    const { mem } = this;
 
-        // extract repeated calculations
-        mem.massSum = m[0] + m[1];
-        mem.biasedMassSum = 2 * m[0] + m[1];
-        mem.angleDifference = theta[0] - theta[1];
-        mem.doubleSineAngleDiff = 2 * sin(mem.angleDifference);
-        mem.cosAngleDiff = cos(mem.angleDifference);
-        mem.denFactor = mem.biasedMassSum - m[1] * cos(2 * mem.angleDifference);
-        mem.velSquaredTimesL = [
-          dTheta[0] * dTheta[0] * l[0],
-          dTheta[1] * dTheta[1] * l[1]
-        ];
+    // extract repeated calculations
+    mem.massSum = m[0] + m[1];
+    mem.biasedMassSum = 2 * m[0] + m[1];
+    mem.angleDifference = theta[0] - theta[1];
+    mem.doubleSineAngleDiff = 2 * sin(mem.angleDifference);
+    mem.cosAngleDiff = cos(mem.angleDifference);
+    mem.denFactor = mem.biasedMassSum - m[1] * cos(2 * mem.angleDifference);
+    mem.velSquaredTimesL = [
+      dTheta[0] * dTheta[0] * l[0],
+      dTheta[1] * dTheta[1] * l[1]
+    ];
 
-        const {
-          massSum,
-          biasedMassSum,
-          doubleSineAngleDiff,
-          cosAngleDiff,
-          denFactor,
-          velSquaredTimesL,
-        } = mem;
+    const {
+      massSum,
+      biasedMassSum,
+      doubleSineAngleDiff,
+      cosAngleDiff,
+      denFactor,
+      velSquaredTimesL,
+    } = mem;
 
-        // solve for the second derivatives
-        // the equations are very long fractions, that's why they were split like this
-        const num = [0, 0, 0, 0];
-        const den = [
-          l[0] * denFactor,
-          l[1] * denFactor
-        ];
+    // solve for the second derivatives
+    // the equations are very long fractions, that's why they were split like this
+    const num = [0, 0, 0, 0];
+    const den = [
+      l[0] * denFactor,
+      l[1] * denFactor
+    ];
 
-        // for theta 1
-        num[0] = -g * biasedMassSum * sin(theta[0]);
-        num[1] = -m[1] * g * sin(theta[0] - 2 * theta[1]);
-        num[2] = -doubleSineAngleDiff * m[1]
-        num[3] = velSquaredTimesL[1] + velSquaredTimesL[0] * cosAngleDiff;
-        ddTheta[0] = (num[0] + num[1] + num[2] * num[3]) / den[0];
+    // for theta 1
+    num[0] = -g * biasedMassSum * sin(theta[0]);
+    num[1] = -m[1] * g * sin(theta[0] - 2 * theta[1]);
+    num[2] = -doubleSineAngleDiff * m[1]
+    num[3] = velSquaredTimesL[1] + velSquaredTimesL[0] * cosAngleDiff;
+    ddTheta[0] = (num[0] + num[1] + num[2] * num[3]) / den[0];
 
-        // for theta 2
-        num[0] = doubleSineAngleDiff;
-        num[1] = velSquaredTimesL[0] * massSum;
-        num[2] = g * massSum * cos(theta[0]);
-        num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff;
-        ddTheta[1] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
+    // for theta 2
+    num[0] = doubleSineAngleDiff;
+    num[1] = velSquaredTimesL[0] * massSum;
+    num[2] = g * massSum * cos(theta[0]);
+    num[3] = velSquaredTimesL[1] * m[1] * cosAngleDiff;
+    ddTheta[1] = (num[0] * (num[1] + num[2] + num[3])) / den[1];
 
-        // simulate physics for theta 1 and 2
-        for (let i = 0; i < 2; i++) {
-            dTheta[i] += ddTheta[i];
-            theta[i] += dTheta[i];
+    // simulate physics for theta 1 and 2
+    for (let i = 0; i < 2; i++) {
 
-            theta[i] %= (2 * Math.PI);
-            if (theta[i] < 0) {
-                theta[i] += 2 * Math.PI;
-            }
+      dTheta[i] += ddTheta[i];
+      theta[i] += dTheta[i];
 
-            // Optional dampening function
-            // dTheta[i] *= 0.9975
-        }
+      theta[i] %= (2 * Math.PI);
+      if (theta[i] < 0) {
+        theta[i] += 2 * Math.PI;
+      }
 
-        return next;
+      // Optional dampening function
+      // dTheta[i] *= 0.9975
     }
 
-    getPendulumState(): PendulumState {
-        return {
-            theta: this.theta,
-            dTheta: this.dTheta,
-            ddTheta: this.ddTheta,
-            l: this.l,
-            m: this.m,
-            g: this.g,
-        };
+    // experimental dampening function to prevent pendulum from going crazy
+    if (dTheta[0] >= 0.3 || dTheta[0] <= -0.3) {
+      dTheta[0] *= 0.5
+      dTheta[1] = 0
+      ddTheta[0] *= 0.2
+      ddTheta[1] *= 0.8
     }
 
-    resetPendulumState(state: PendulumState): void {
-        this.theta = state.theta;
-        this.dTheta = state.dTheta;
-        this.ddTheta = state.ddTheta;
-        this.l = state.l;
-        this.m = state.m;
-        this.g = state.g;
+    return next;
+  }
 
-        this.recalcPositions();
-    }
+  getPendulumState(): PendulumState {
+    return {
+      theta: this.theta,
+      dTheta: this.dTheta,
+      ddTheta: this.ddTheta,
+      l: this.l,
+      m: this.m,
+      g: this.g,
+    };
+  }
+
+  resetPendulumState(state: PendulumState): void {
+    this.theta = state.theta;
+    this.dTheta = state.dTheta;
+    this.ddTheta = state.ddTheta;
+    this.l = state.l;
+    this.m = state.m;
+    this.g = state.g;
+
+    this.recalcPositions();
+  }
 }
 
 export const DoublePendulumSingleton = new DoublePendulum(
-    Preset.getDoublePendulumPresets()
+  Preset.getDoublePendulumPresets()
 );
