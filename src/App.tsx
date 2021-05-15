@@ -92,12 +92,14 @@ class App extends React.Component<{}, ComponentState> {
 
   canvasDoubleClicked = (paused: boolean) => {
     if (paused) {
+      this.audioGraph.audioContext.suspend();
       this.setState({
         disabledTheta: false,
         theta1Value: Math.round(this.doublePendulum.theta[0] * 100) / 100,
         theta2Value: Math.round(this.doublePendulum.theta[1] * 100) / 100
       });
     } else {
+      this.audioGraph.audioContext.resume();
       this.setState({
         disabledTheta: true
       });
