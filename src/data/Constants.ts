@@ -5,6 +5,7 @@ export const DSPZERO = 1e-32; // DSP elements do not like zero. Use this instead
 export const TWENTYK = 20000; // Approx. upper limit of human hearing
 export const VALUERES = 1000; // Resolution in steps for values that need mapping from UI into DSP.
 
+export const FILTER_RESOLUTION = 100;
 
 // Strings for reuse
 export const A = 'a';

@@ -1,13 +1,18 @@
 import React from 'react';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import './App.css';
+
+import { A, D, S, R, FILTER_RESOLUTION } from './data/Constants';
+import { Presets } from './data/Presets';
+
+import AudioGraph from './dsp/audio-graph';
+import DoublePendulum from './sim/double-pendulum';
+
 import Visualizations from './com/Visualizations'
 import SettingsCards from './com/SettingsCards';
-import { DoublePendulum, DoublePendulumSingleton } from './sim/double-pendulum';
 import PendulumVisualization from './com/PendulumVisualization';
 import EnvelopeVisualization from './com/EnvelopeVisualization';
-import { Presets } from './data/Presets';
-import { audioGraph } from './dsp/audio-graph';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import FilterVisualization from './com/FilterVisualization';
 
 const theme = createMuiTheme({
   palette: {
@@ -34,13 +39,13 @@ interface ComponentState {
   envelopeD: number,
   envelopeS: number,
   envelopeR: number,
+  filterSpectrum: Float32Array,
 }
 
 class App extends React.Component<{}, ComponentState> {
 
   doublePendulum: DoublePendulum;
-  dpv: any;
-  audioGraph: any;
+  audioGraph: AudioGraph;
   readonly presets: Presets;
   readonly componentNames: Array<string>;
 
@@ -50,6 +55,13 @@ class App extends React.Component<{}, ComponentState> {
     // use presets in all components as database --> especially in sliders
     this.presets = new Presets();
     this.componentNames = this.presets.getComponentNames();
+
+    // create the double pendulum
+    this.doublePendulum = new DoublePendulum(this.presets.getDoublePendulumPresets())
+    this.doublePendulum.recalcPositions();
+
+    // create the audio graph
+    this.audioGraph = new AudioGraph(this.doublePendulum);
 
     this.state = {
       visualsOrder: this.presets.visualsOrder,
@@ -61,19 +73,8 @@ class App extends React.Component<{}, ComponentState> {
       envelopeD: (this.presets.envelope.d.default / this.presets.envelope.d.max) * 100,
       envelopeS: (this.presets.envelope.s.default / this.presets.envelope.s.max) * 100,
       envelopeR: (this.presets.envelope.r.default / this.presets.envelope.r.max) * 100,
+      filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION)
     }
-
-    this.doublePendulum = DoublePendulumSingleton;
-    this.dpv = <PendulumVisualization
-      dp={this.doublePendulum}
-      memorySettings={this.presets.pvMemorySettings}
-      pendulumSettings={this.presets.pvPendulumSettings}
-      canvasDoubleClicked={this.canvasDoubleClicked}
-    />;
-    this.doublePendulum.recalcPositions();
-
-    // create the audio graph
-    this.audioGraph = audioGraph;
   }
 
   setHighlight = (className: string) => {
@@ -122,26 +123,29 @@ class App extends React.Component<{}, ComponentState> {
       value: newValue,
     });
     switch (e) {
-      case 'a':
+      case A:
         this.setState({ envelopeA: (newValue / this.presets.envelope.a.max) * 100 });
         break;
-      case 'd':
+      case D:
         this.setState({ envelopeD: (newValue / this.presets.envelope.d.max) * 100 });
         break;
-      case 's':
+      case S:
         this.setState({ envelopeS: (newValue / this.presets.envelope.s.max) * 100 });
         break;
-      case 'r':
+      case R:
         this.setState({ envelopeR: (newValue / this.presets.envelope.r.max) * 100 });
         break;
     }
   }
 
-  handleFilterChange = (e: any, newValue: number | string) => {
+  handleFilterChange = (e: any, newValue: number | 'lp' | 'hp' | 'bp' | 'notch') => {
     this.audioGraph.setFilter({
       identifier: e,
       value: newValue,
     });
+    this.audioGraph.audioContext.suspend()
+    this.audioGraph.audioContext.resume()
+    this.setState({ filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION) });
   }
 
   handleVolumeChange = (e: any, newValue: number) => {
@@ -158,13 +162,25 @@ class App extends React.Component<{}, ComponentState> {
           </div>
           <Visualizations
             highlighted={this.state.highlighted}
-            dpv={this.dpv}
+            doublePendulumVisualization={
+              <PendulumVisualization
+                dp={this.doublePendulum}
+                memorySettings={this.presets.pvMemorySettings}
+                pendulumSettings={this.presets.pvPendulumSettings}
+                canvasDoubleClicked={this.canvasDoubleClicked}
+              />
+            }
             envelopeVisualization={
               <EnvelopeVisualization
                 a={this.state.envelopeA}
                 d={this.state.envelopeD}
                 s={this.state.envelopeS}
                 r={this.state.envelopeR}
+              />
+            }
+            filterVisualization={
+              <FilterVisualization
+                spectrum={this.state.filterSpectrum}
               />
             }
           />
