@@ -1,4 +1,4 @@
-import {A, D, S, R, LP, HP, BP, NOTCH, TYPE, FREQ, RES, PARAM_SMOOTHING, DSPZERO, VALUERES} from '../data/Constants';
+import {A, D, S, R, LP, HP, BP, NOTCH, TYPE, FREQ, RES, PARAM_SMOOTHING, SAMPLERATE, DSPZERO, VALUERES} from '../data/Constants';
 import { Presets } from '../data/Presets';
 import { DoublePendulum, DoublePendulumSingleton } from '../sim/double-pendulum';
 import FFT from 'fft.js';
@@ -260,6 +260,27 @@ class AudioGraph {
 
       this.setOscillatorWave();
     };
+
+    /**
+      * @param res - How many frequencies will be sampled
+      * @returns Float32Array with values between 0 - 1 that represent the magnitude of the sampled frequencies
+      */
+    getFilterSpectrum(res: number): Float32Array {
+      // Which frequencies to sample
+      const freq = new Float32Array(res);
+      // Output arrays for magnitudes and phases
+      const magOut = new Float32Array(res);
+      const phaOut = new Float32Array(res);
+      // Distance between frequencies
+      const fStep = SAMPLERATE / res;
+
+      for (let i = 0; i < res; i++) {
+        freq[i] = i * fStep;
+      }
+
+      this.audioNodes.filter.getFrequencyResponse(freq, magOut, phaOut);
+      return magOut;
+    }
 }
 
 export const audioGraph = new AudioGraph();
