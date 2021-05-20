@@ -1,7 +1,7 @@
 import React from "react";
 import Sketch from "react-p5";
 import p5Types from "p5";
-import { DoublePendulum } from "../sim/double-pendulum";
+import DoublePendulum from "../sim/double-pendulum";
 
 function mapRange(value: number, low1: number, high1: number, low2: number, high2: number) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);

@@ -1,6 +1,6 @@
 import {A, D, S, R, LP, HP, BP, NOTCH, TYPE, FREQ, RES, PARAM_SMOOTHING, TWENTYK, DSPZERO, VALUERES} from '../data/Constants';
 import { Presets } from '../data/Presets';
-import { DoublePendulum, DoublePendulumSingleton } from '../sim/double-pendulum';
+import DoublePendulum from '../sim/double-pendulum';
 import FFT from 'fft.js';
 const Preset = new Presets();
 
@@ -25,12 +25,12 @@ type EnvelopeSegment = {
     value: number;
 }
 
-type FilterParam = {
+export type FilterParam = {
     identifier: 'frequency' | 'resonance';
     value: number;
 }
 
-type FilterType = {
+export type FilterType = {
     identifier: 'type';
     value: 'lp' | 'hp' | 'bp' | 'notch';
 }
@@ -43,7 +43,7 @@ type MorphingOscillator = {
     nextTableIndex: number;
 }
 
-class AudioGraph {
+export default class AudioGraph {
     audioContext: AudioContext;
     audioNodes: AudioNodes;
     envelope: ADSREnvelope;
@@ -53,7 +53,7 @@ class AudioGraph {
     pendulumBuffer: Float64Array;
     fft: FFT;
 
-    constructor() {
+    constructor(doublePendulum: DoublePendulum) {
         // create context
         this.audioContext = new AudioContext();
         this.audioNodes = {
@@ -80,7 +80,7 @@ class AudioGraph {
                 this.audioContext.currentTime,
             ],
         };
-        this.pendulum = DoublePendulumSingleton;
+        this.pendulum = doublePendulum;
 
         this.pendulumBuffer = new Float64Array(1024);
         this.fft = new FFT(this.pendulumBuffer.length);
@@ -295,5 +295,3 @@ class AudioGraph {
       return magOut;
     }
 }
-
-export const audioGraph = new AudioGraph();

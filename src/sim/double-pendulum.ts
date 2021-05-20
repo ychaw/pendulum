@@ -28,7 +28,7 @@ interface Memory {
   velSquaredTimesL: Array<number>;
 }
 
-export class DoublePendulum {
+export default class DoublePendulum {
   // TYPES
   x: Array<number>;
   y: Array<number>;
@@ -239,7 +239,3 @@ export class DoublePendulum {
     this.recalcPositions();
   }
 }
-
-export const DoublePendulumSingleton = new DoublePendulum(
-  Preset.getDoublePendulumPresets()
-);
