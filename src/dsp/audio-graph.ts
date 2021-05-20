@@ -1,4 +1,4 @@
-import {A, D, S, R, LP, HP, BP, NOTCH, TYPE, FREQ, RES, PARAM_SMOOTHING, SAMPLERATE, DSPZERO, VALUERES} from '../data/Constants';
+import {A, D, S, R, LP, HP, BP, NOTCH, TYPE, FREQ, RES, PARAM_SMOOTHING, TWENTYK, DSPZERO, VALUERES} from '../data/Constants';
 import { Presets } from '../data/Presets';
 import { DoublePendulum, DoublePendulumSingleton } from '../sim/double-pendulum';
 import FFT from 'fft.js';
@@ -84,12 +84,13 @@ class AudioGraph {
 
         this.pendulumBuffer = new Float64Array(1024);
         this.fft = new FFT(this.pendulumBuffer.length);
-        // Set oscillator to saw for testing
         this.setOscillatorWave();
+        this.audioNodes.oscillator.oscillators[0].frequency.value = 55;
+        this.audioNodes.oscillator.oscillators[1].frequency.value = 55;
 
         this.initSmoothTransitions();
         this.connectNodes();
-        //this.envelopeTimerID = window.setInterval(this.loopEnvelope, 10);
+        this.envelopeTimerID = window.setInterval(this.loopEnvelope, 10);
         this.oscillatorTimerID = window.setInterval(this.updateOscillator, this.audioNodes.oscillator.morphDuration );
         console.log('constructed audio graph');
     }
@@ -112,8 +113,8 @@ class AudioGraph {
         this.audioNodes.master.gain.exponentialRampToValueAtTime(Preset.volume.volume.default, this.audioContext.currentTime);
         this.audioNodes.gain.gain.exponentialRampToValueAtTime(1, this.audioContext.currentTime);
         this.audioNodes.filter.frequency.exponentialRampToValueAtTime(Preset.filter.frequency.default, this.audioContext.currentTime);
-        this.audioNodes.oscillator.gainNodes[0].gain.exponentialRampToValueAtTime(1, this.audioContext.currentTime);
-        this.audioNodes.oscillator.gainNodes[1].gain.exponentialRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
+        this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(1, this.audioContext.currentTime);
+        this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
     }
 
 
@@ -207,18 +208,30 @@ class AudioGraph {
 
     fillBuffer(buffer: Float64Array, pendulum: DoublePendulum): void {
         const initialState = pendulum.getPendulumState();
-        let lastState = { 
+        let lastState = {
           ...initialState,
           // JS apparently copies arrays nested in objects by reference, so we need manual copies for these:
           theta: Array.from(initialState.theta),
           dTheta: Array.from(initialState.dTheta),
           ddTheta: Array.from(initialState.ddTheta),
         };
+        // rect window
+        const window = Array(buffer.length).fill(1);
+
+        if (true) {
+            // make window a parzen window
+            const w = (n: number) => Math.abs(n) <= buffer.length/4 ?
+                1 - 6 * Math.pow(n/(buffer.length/2), 2) * (1 - Math.abs(n)/(buffer.length/2)) :
+                2 * Math.pow(1 - (Math.abs(n)/(buffer.length/2)), 3);
+            for (let i = 0; i < buffer.length; i++) {
+                window[i] = w(i - buffer.length / 2);
+            }
+        }
         // fill the buffer with data 'from the future'
         for(let index = 0; index < buffer.length; index++) {
             const x = lastState.l[0] * Math.sin(lastState.theta[0]);
             // use x[1] as value
-            buffer[index] = x + lastState.l[1] * Math.sin(lastState.theta[1]);
+            buffer[index] = (x + lastState.l[1] * Math.sin(lastState.theta[1])) * window[index];
             lastState = pendulum.advanceState(lastState);
         }
     }
@@ -248,14 +261,14 @@ class AudioGraph {
       //this.audioNodes.oscillator.gainNodes[0].gain.cancelScheduledValues(this.audioContext.currentTime);
       //this.audioNodes.oscillator.gainNodes[1].gain.cancelScheduledValues(this.audioContext.currentTime);
 
-      const morphDiv = 2;
-      if (this.audioNodes.oscillator.nextTableIndex === 0) {
-        this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / morphDiv);
-        this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / morphDiv);
 
+        const morphDiv = 8;
+      if (this.audioNodes.oscillator.nextTableIndex === 0) {
+          this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
+          this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
       } else if (this.audioNodes.oscillator.nextTableIndex === 1) {
-        this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / morphDiv);
-        this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / morphDiv);
+          this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
+          this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
       }
 
       this.setOscillatorWave();
@@ -272,7 +285,7 @@ class AudioGraph {
       const magOut = new Float32Array(res);
       const phaOut = new Float32Array(res);
       // Distance between frequencies
-      const fStep = SAMPLERATE / res;
+      const fStep = TWENTYK / res;
 
       for (let i = 0; i < res; i++) {
         freq[i] = i * fStep;
