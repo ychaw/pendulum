@@ -61,7 +61,7 @@ export default class AudioGraph {
               oscillators: [this.audioContext.createOscillator(), this.audioContext.createOscillator()],
               gainNodes: [this.audioContext.createGain(), this.audioContext.createGain()],
               morphStage: 0.0,
-              morphDuration: 1000,
+              morphDuration: 2000,
               nextTableIndex: 1,
             },
             filter: this.audioContext.createBiquadFilter(),
@@ -85,13 +85,13 @@ export default class AudioGraph {
         this.pendulumBuffer = new Float64Array(1024);
         this.fft = new FFT(this.pendulumBuffer.length);
         this.setOscillatorWave();
-        this.audioNodes.oscillator.oscillators[0].frequency.value = 55;
-        this.audioNodes.oscillator.oscillators[1].frequency.value = 55;
+        this.audioNodes.oscillator.oscillators[0].frequency.value = 110;
+        this.audioNodes.oscillator.oscillators[1].frequency.value = 110;
 
         this.initSmoothTransitions();
         this.connectNodes();
-        this.envelopeTimerID = window.setInterval(this.loopEnvelope, 10);
-        this.oscillatorTimerID = window.setInterval(this.updateOscillator, this.audioNodes.oscillator.morphDuration );
+        //this.envelopeTimerID = window.setInterval(this.loopEnvelope, 10);
+        this.oscillatorTimerID = window.setTimeout(this.updateOscillator, 10 );
         console.log('constructed audio graph');
     }
 
@@ -227,11 +227,13 @@ export default class AudioGraph {
                 window[i] = w(i - buffer.length / 2);
             }
         }
-        // fill the buffer with data 'from the future'
-        for(let index = 0; index < buffer.length; index++) {
+        // fill the buffer with data 'from the future' and undersample
+        for(let index = 1; index < buffer.length; index += 4) {
             const x = lastState.l[0] * Math.sin(lastState.theta[0]);
             // use x[1] as value
             buffer[index] = (x + lastState.l[1] * Math.sin(lastState.theta[1])) * window[index];
+            // use theta as value
+            //buffer[index] = lastState.theta[0] * window[index];
             lastState = pendulum.advanceState(lastState);
         }
     }
@@ -260,9 +262,10 @@ export default class AudioGraph {
     updateOscillator = () => {
       //this.audioNodes.oscillator.gainNodes[0].gain.cancelScheduledValues(this.audioContext.currentTime);
       //this.audioNodes.oscillator.gainNodes[1].gain.cancelScheduledValues(this.audioContext.currentTime);
+        window.clearTimeout(this.oscillatorTimerID);
 
 
-        const morphDiv = 8;
+        const morphDiv = 1;
       if (this.audioNodes.oscillator.nextTableIndex === 0) {
           this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
           this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
@@ -270,6 +273,7 @@ export default class AudioGraph {
           this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
           this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.audioNodes.oscillator.morphDuration / 1000 / morphDiv);
       }
+        this.oscillatorTimerID = window.setTimeout(this.updateOscillator, this.audioNodes.oscillator.morphDuration);
 
       this.setOscillatorWave();
     };
