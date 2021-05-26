@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, ReferenceLine, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 interface ComponentProps {
     spectrum: Float32Array
@@ -23,7 +23,7 @@ export default class FilterVisualization extends React.Component<ComponentProps,
         for (let i = 0; i < raw_data.length; i++) {
             data[i] = {
                 x: i,
-                y: raw_data[i]
+                y: Math.log(raw_data[i])
             }
         }
 
@@ -34,13 +34,11 @@ export default class FilterVisualization extends React.Component<ComponentProps,
                         hide={true}
                         dataKey='x'
                         type='number'
-                        domain={[0, data.length]}
                         tick={false}
                     />
                     <YAxis
                         hide={true}
                         type='number'
-                        domain={[0, 1]}
                         tick={false}
                     />
                     <Line

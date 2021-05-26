@@ -147,6 +147,7 @@ export default class PendulumVisualization extends React.Component<ComponentProp
         p5.circle(x1, y1, this.props.pendulumSettings.ankleWidth);
 
         // Debug Text
+        /*
         p5.translate(-this.dim[0] / 2, -this.dim[1] / 2);
         p5.text('Theta1:    ' + this.props.dp.theta[0].toString().replace(/^(?=\d)/, ' '), 10, 20);
         p5.text('Theta2:    ' + this.props.dp.theta[1].toString().replace(/^(?=\d)/, ' '), 10, 40);
@@ -154,6 +155,7 @@ export default class PendulumVisualization extends React.Component<ComponentProp
         p5.text('D Theta2:  ' + this.props.dp.dTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 100);
         p5.text('DD Theta1: ' + this.props.dp.ddTheta[0].toString().replace(/^(?=\d)/, ' '), 10, 140);
         p5.text('DD Theta2: ' + this.props.dp.ddTheta[1].toString().replace(/^(?=\d)/, ' '), 10, 160);
+        */
     }
 
     render() {
