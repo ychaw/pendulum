@@ -52,6 +52,8 @@ export default class AudioGraph {
     pendulum: DoublePendulum;
     pendulumBuffer: Float64Array;
     fft: FFT;
+    activeNotes: Array<number>;
+    hasMIDI: boolean;
 
     constructor(doublePendulum: DoublePendulum) {
         // create context
@@ -92,7 +94,10 @@ export default class AudioGraph {
         this.connectNodes();
         //this.envelopeTimerID = window.setInterval(this.loopEnvelope, 10);
         this.oscillatorTimerID = window.setTimeout(this.updateOscillator, 10 );
+        this.activeNotes = [];
+        this.hasMIDI = false;
         console.log('constructed audio graph');
+        this.setupMidi();
     }
 
     connectNodes() {
@@ -111,7 +116,7 @@ export default class AudioGraph {
     // All values that ramp somewhere need to be set once
     initSmoothTransitions() {
         this.audioNodes.master.gain.exponentialRampToValueAtTime(Preset.volume.volume.default, this.audioContext.currentTime);
-        this.audioNodes.gain.gain.exponentialRampToValueAtTime(1, this.audioContext.currentTime);
+        this.audioNodes.gain.gain.exponentialRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
         this.audioNodes.filter.frequency.exponentialRampToValueAtTime(Preset.filter.frequency.default, this.audioContext.currentTime);
         this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(1, this.audioContext.currentTime);
         this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
@@ -228,7 +233,7 @@ export default class AudioGraph {
             }
         }
         // fill the buffer with data 'from the future' and undersample
-        for(let index = 1; index < buffer.length; index += 4) {
+        for(let index = 0; index < buffer.length; index += 4) {
             const x = lastState.l[0] * Math.sin(lastState.theta[0]);
             // use x[1] as value
             buffer[index] = (x + lastState.l[1] * Math.sin(lastState.theta[1])) * window[index];
@@ -297,5 +302,73 @@ export default class AudioGraph {
 
       this.audioNodes.filter.getFrequencyResponse(freq, magOut, phaOut);
       return magOut;
+    }
+
+    setupMidi(): void {
+        let midiAccess;
+        const portamento = 0.001;
+        // functions
+        const onMIDIInit = (midi: any) => {
+            midiAccess = midi;
+            let foundDevice = false;
+            let inputs = midiAccess.inputs.values();
+            for ( let input = inputs.next(); input && !input.done; input = inputs.next()) {
+                input.value.onmidimessage = MIDIMessageEventHandler;
+                foundDevice = true;
+                this.hasMIDI = foundDevice;
+            }
+            if (!foundDevice) {
+                alert('No MIDI device found');
+            }
+
+        };
+        const onMIDIReject = (err: any) => {
+            alert('MIDI system failed to start.');
+        };
+        const MIDIMessageEventHandler = (event: any) => {
+            switch (event.data[0] & 0xf0) {
+                case 0x80:
+                    noteOff(event.data[1]);
+                    return;
+                case 0x90:
+                    if (event.data[2] !== 0) {
+                        noteOn(event.data[1]);
+                        return;
+                    }
+            }
+        };
+        const frequencyFromNoteNumber = ( note: number ) => 440 * Math.pow(2, (note-69)/12);
+        const noteOn = ( noteNumber: number ) => {
+            this.activeNotes.push( noteNumber );
+            this.audioNodes.oscillator.oscillators.forEach((osc) => {
+                osc.frequency.cancelScheduledValues(0);
+                osc.frequency.setTargetAtTime( frequencyFromNoteNumber(noteNumber), 0, portamento );
+            });
+            this.audioNodes.gain.gain.cancelScheduledValues(0);
+            this.audioNodes.gain.gain.setTargetAtTime(1.0, 0, this.envelope.a);
+            this.audioNodes.gain.gain.setTargetAtTime(this.envelope.s, this.envelope.a, this.envelope.d);
+        };
+        const noteOff = (noteNumber: number) => {
+            let position = this.activeNotes.indexOf(noteNumber);
+            if (position !== -1) {
+                this.activeNotes.splice(position, 1);
+            }
+            if (this.activeNotes.length === 0) {
+                this.audioNodes.gain.gain.cancelScheduledValues(0);
+                this.audioNodes.gain.gain.setTargetAtTime(0.0, 0, this.envelope.r);
+            } else {
+                this.audioNodes.oscillator.oscillators.forEach((osc) => {
+                    osc.frequency.cancelScheduledValues(0);
+                    osc.frequency.setTargetAtTime(frequencyFromNoteNumber(this.activeNotes[this.activeNotes.length - 1]), 0, portamento);
+                });
+            }
+        };
+        console.log('Trying to access MIDI devices...')
+        // @ts-ignore
+        if (navigator.requestMIDIAccess) {
+            // @ts-ignore
+            navigator.requestMIDIAccess().then( onMIDIInit, onMIDIReject);
+            console.log('Connected to MIDI device')
+        }
     }
 }
