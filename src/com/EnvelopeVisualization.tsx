@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart, Line, ReferenceLine, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 interface ComponentProps {
     a: number,
@@ -61,8 +61,8 @@ export default class EnvelopeVisualization extends React.Component<ComponentProp
                         domain={[0, data[1].y]}
                         tick={false}
                     />
-                    {/*=================================================================================*/}
 
+                    {/*
                     <ReferenceLine
                         stroke='white'
                         label={{ value: 'S', position: 'right', fill: 'white', fontFamily: 'Raleway' }}
@@ -78,9 +78,7 @@ export default class EnvelopeVisualization extends React.Component<ComponentProp
                         ]}
                         strokeWidth={2}
                     />
-
-                    {/*=================================================================================*/}
-
+                    
                     <ReferenceLine
                         stroke='white'
                         label={{ value: 'A', position: 'bottom', fill: 'white', fontFamily: 'Raleway' }}
@@ -91,9 +89,7 @@ export default class EnvelopeVisualization extends React.Component<ComponentProp
                         ]}
                         strokeWidth={2}
                     />
-
-                    {/*=================================================================================*/}
-
+                    
                     <ReferenceLine
                         stroke='white'
                         label={{ value: 'D', position: 'bottom', fill: 'white', fontFamily: 'Raleway' }}
@@ -104,9 +100,7 @@ export default class EnvelopeVisualization extends React.Component<ComponentProp
                         ]}
                         strokeWidth={2}
                     />
-
-                    {/*=================================================================================*/}
-
+                    
                     <ReferenceLine
                         stroke='white'
                         label={{ value: 'R', position: 'bottom', fill: 'white', fontFamily: 'Raleway' }}
@@ -117,8 +111,7 @@ export default class EnvelopeVisualization extends React.Component<ComponentProp
                         ]}
                         strokeWidth={2}
                     />
-
-                    {/*=================================================================================*/}
+                    */}
 
                     <Line
                         type='monotone'

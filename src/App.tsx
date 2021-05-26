@@ -143,8 +143,6 @@ class App extends React.Component<{}, ComponentState> {
       identifier: e,
       value: newValue,
     });
-    this.audioGraph.audioContext.suspend()
-    this.audioGraph.audioContext.resume()
     this.setState({ filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION) });
   }
 
