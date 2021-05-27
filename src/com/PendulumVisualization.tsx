@@ -111,7 +111,7 @@ export default class PendulumVisualization extends React.Component<ComponentProp
                 }
             } else if (this.props.memorySettings.drawMode === 'dots' || this.props.memorySettings.drawMode === 'fadingLine') {
                 let newLength = this.mem.push([x1, y1]);
-                if (newLength >= this.props.memorySettings.maxMem) {
+                if (newLength > this.props.memorySettings.maxMem) {
                     this.mem.shift();
                 }
                 this.mem.forEach((e) => {

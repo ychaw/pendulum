@@ -13,6 +13,7 @@ import SettingsCards from './com/SettingsCards';
 import PendulumVisualization from './com/PendulumVisualization';
 import EnvelopeVisualization from './com/EnvelopeVisualization';
 import FilterVisualization from './com/FilterVisualization';
+import VolumeVisualization from './com/VolumeVisualization';
 
 const theme = createMuiTheme({
   palette: {
@@ -34,12 +35,13 @@ interface ComponentState {
   highlighted: string
   theta1Value: number
   theta2Value: number
-  disabledTheta: boolean
+  pendulumPaused: boolean
   envelopeA: number,
   envelopeD: number,
   envelopeS: number,
   envelopeR: number,
   filterSpectrum: Float32Array,
+  volume: number
 }
 
 class App extends React.Component<{}, ComponentState> {
@@ -68,12 +70,13 @@ class App extends React.Component<{}, ComponentState> {
       highlighted: '',
       theta1Value: this.presets.oscillator.thetaFirstLeg.default,
       theta2Value: this.presets.oscillator.thetaSecondLeg.default,
-      disabledTheta: false,
+      pendulumPaused: true,
       envelopeA: (this.presets.envelope.a.default / this.presets.envelope.a.max) * 100,
       envelopeD: (this.presets.envelope.d.default / this.presets.envelope.d.max) * 100,
       envelopeS: (this.presets.envelope.s.default / this.presets.envelope.s.max) * 100,
       envelopeR: (this.presets.envelope.r.default / this.presets.envelope.r.max) * 100,
-      filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION)
+      filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION),
+      volume: this.presets.volume.volume.default
     }
   }
 
@@ -95,14 +98,14 @@ class App extends React.Component<{}, ComponentState> {
     if (paused) {
       this.audioGraph.audioContext.suspend();
       this.setState({
-        disabledTheta: false,
+        pendulumPaused: true,
         theta1Value: Math.round(this.doublePendulum.theta[0] * 100) / 100,
         theta2Value: Math.round(this.doublePendulum.theta[1] * 100) / 100
       });
     } else {
       this.audioGraph.audioContext.resume();
       this.setState({
-        disabledTheta: true
+        pendulumPaused: false
       });
     }
   }
@@ -148,6 +151,7 @@ class App extends React.Component<{}, ComponentState> {
 
   handleVolumeChange = (e: any, newValue: number) => {
     this.audioGraph.setMasterGain(newValue);
+    this.setState({ volume: newValue });
   }
 
   render() {
@@ -181,6 +185,13 @@ class App extends React.Component<{}, ComponentState> {
                 spectrum={this.state.filterSpectrum}
               />
             }
+            volumeVisualization={
+              <VolumeVisualization
+                dp={this.doublePendulum}
+                paused={this.state.pendulumPaused}
+                volume={this.state.volume}
+              />
+            }
           />
           <SettingsCards
             classNames={this.componentNames}
@@ -195,7 +206,7 @@ class App extends React.Component<{}, ComponentState> {
             }}
             theta1Value={this.state.theta1Value}
             theta2Value={this.state.theta2Value}
-            disabledTheta={this.state.disabledTheta}
+            disabledTheta={!this.state.pendulumPaused}
           />
         </div>
       </ThemeProvider>

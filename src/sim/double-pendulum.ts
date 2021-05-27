@@ -1,6 +1,3 @@
-import { Presets } from '../data/Presets';
-const Preset = new Presets();
-
 // TYPE DECLARATIONS
 interface InitialConditions {
   theta: Array<number>;

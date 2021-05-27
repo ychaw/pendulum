@@ -10,8 +10,8 @@ interface ComponentProps {
 
 export default class EnvelopeVisualization extends React.Component<ComponentProps, {}> {
 
-    padding = 1;
-    labelDist = -10;
+    // padding = 1;
+    // labelDist = -10;
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
         return this.props.a !== nextProps.a || this.props.d !== nextProps.d || this.props.s !== nextProps.s || this.props.r !== nextProps.r
@@ -47,7 +47,7 @@ export default class EnvelopeVisualization extends React.Component<ComponentProp
 
         return (
             <ResponsiveContainer>
-                <LineChart width={330} height={220} data={data} margin={{ top: 30, bottom: 55, left: 30, right: 30 }}>
+                <LineChart data={data} margin={{ top: 30, bottom: 30, left: 30, right: 30 }}>
                     <XAxis
                         hide={true}
                         dataKey='x'
