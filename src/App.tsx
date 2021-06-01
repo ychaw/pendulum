@@ -13,7 +13,7 @@ import SettingsCards from './com/SettingsCards';
 import PendulumVisualization from './com/PendulumVisualization';
 import EnvelopeVisualization from './com/EnvelopeVisualization';
 import FilterVisualization from './com/FilterVisualization';
-import VolumeVisualization from './com/VolumeVisualization';
+import VolumeVisualization from './com/VolumeVisualizationP5';
 
 const theme = createMuiTheme({
   palette: {

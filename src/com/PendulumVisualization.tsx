@@ -3,7 +3,7 @@ import Sketch from "react-p5";
 import p5Types from "p5";
 import DoublePendulum from "../sim/double-pendulum";
 
-function mapRange(value: number, low1: number, high1: number, low2: number, high2: number) {
+function lerpRange(value: number, low1: number, high1: number, low2: number, high2: number) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
@@ -81,7 +81,7 @@ export default class PendulumVisualization extends React.Component<ComponentProp
 
         p5.clear();
 
-        p5.scale(this.dim[0] / this.orgDim[0]);
+        //p5.scale(this.dim[0] / this.orgDim[0]);
         p5.translate(this.dim[0] / 2, this.dim[1] / 2);
 
         let x0 = this.props.dp.x[0];
@@ -117,7 +117,7 @@ export default class PendulumVisualization extends React.Component<ComponentProp
                 this.mem.forEach((e) => {
                     let alpha = 255;
                     if (this.mem.indexOf(e) <= this.props.memorySettings.fadingStart) {
-                        alpha = mapRange(this.mem.indexOf(e), 0, this.props.memorySettings.fadingStart, 0, 255)
+                        alpha = lerpRange(this.mem.indexOf(e), 0, this.props.memorySettings.fadingStart, 0, 255)
                     }
                     let color = [this.props.memorySettings.drawColor[0], this.props.memorySettings.drawColor[1], this.props.memorySettings.drawColor[2], alpha]
                     if (this.props.memorySettings.drawMode === 'dots') {
