@@ -204,7 +204,7 @@ export default class DoublePendulum {
     }
 
     // experimental dampening function to prevent pendulum from going crazy
-    if (dTheta[0] >= 0.3 || dTheta[0] <= -0.3) {
+    if (dTheta[0] >= 0.4 || dTheta[0] <= -0.4) {
       dTheta[0] *= 0.5
       dTheta[1] = 0
       ddTheta[0] *= 0.2

@@ -2,6 +2,7 @@ import React from 'react';
 import Sketch from "react-p5";
 import p5Types from "p5";
 import DoublePendulum from '../sim/double-pendulum';
+import { DSPZERO } from '../data/Constants';
 
 function lerpRange(value: number, low1: number, high1: number, low2: number, high2: number) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
@@ -59,6 +60,7 @@ export default class VolumeVisualization extends React.Component<ComponentProps,
         p5.strokeWeight(3);
 
         let x = this.props.dp.x[1] * this.props.volume;
+        x = this.props.volume === DSPZERO ? 0 : x
 
         if (!this.props.paused) {
             let newLength = this.history.push(x);
@@ -77,6 +79,9 @@ export default class VolumeVisualization extends React.Component<ComponentProps,
 
             previous = lerpRange(previous, -maxValue, maxValue, - halfHeight + this.padding, halfHeight - this.padding);
             current = lerpRange(current, -maxValue, maxValue, - halfHeight + this.padding, halfHeight - this.padding);
+
+            previous = isNaN(previous) ? 0 : previous;
+            current = isNaN(current) ? 0 : current;
 
             p5.line((i - 1) * step + this.padding, previous, i * step + this.padding, current);
         }
