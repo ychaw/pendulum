@@ -41,7 +41,8 @@ interface ComponentState {
   envelopeS: number,
   envelopeR: number,
   filterSpectrum: Float32Array,
-  volume: number
+  volume: number,
+  disabledEnvelope: boolean
 }
 
 class App extends React.Component<{}, ComponentState> {
@@ -76,7 +77,8 @@ class App extends React.Component<{}, ComponentState> {
       envelopeS: (this.presets.envelope.s.default / this.presets.envelope.s.max) * 100,
       envelopeR: (this.presets.envelope.r.default / this.presets.envelope.r.max) * 100,
       filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION),
-      volume: this.presets.volume.volume.default
+      volume: this.presets.volume.volume.default,
+      disabledEnvelope: !this.audioGraph.hasMIDI
     }
   }
 
@@ -207,6 +209,7 @@ class App extends React.Component<{}, ComponentState> {
             theta1Value={this.state.theta1Value}
             theta2Value={this.state.theta2Value}
             disabledTheta={!this.state.pendulumPaused}
+            disabledEnvelope={this.state.disabledEnvelope}
           />
         </div>
       </ThemeProvider>

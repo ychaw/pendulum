@@ -3,7 +3,7 @@ import React from 'react';
 import { IPreset, ITypes } from '../data/Presets';
 import { LP, HP, BP, NOTCH } from '../data/Constants';
 
-class OscillatorContent extends React.Component<{ preset: any, handleSliderChange: any, theta1Value: number, theta2Value: number, disabledTheta: boolean }, { theta1Value: number, theta2Value: number }> {
+class PendulumContent extends React.Component<{ preset: any, handleSliderChange: any, theta1Value: number, theta2Value: number, disabledTheta: boolean }, { theta1Value: number, theta2Value: number }> {
 
     constructor(props: any) {
         super(props);
@@ -11,6 +11,16 @@ class OscillatorContent extends React.Component<{ preset: any, handleSliderChang
             theta1Value: props.theta1Value,
             theta2Value: props.theta2Value
         }
+    }
+
+    shouldComponentUpdate(nextProps: any, nextState: any) {
+        if (nextProps.theta1Value !== this.props.theta1Value && nextProps.theta2Value !== this.props.theta2Value) {
+            this.setState({
+                theta1Value: nextProps.theta1Value,
+                theta2Value: nextProps.theta2Value,
+            });
+        }
+        return true
     }
 
     changeValue(param: string, newValue: number) {
@@ -26,18 +36,7 @@ class OscillatorContent extends React.Component<{ preset: any, handleSliderChang
         this.props.handleSliderChange(param, newValue);
     }
 
-    // Trust me, I'm not happy about it either
-    UNSAFE_componentWillReceiveProps(props: any) {
-        if (props.theta1Value !== this.props.theta1Value && props.theta2Value !== this.props.theta2Value) {
-            this.setState({
-                theta1Value: props.theta1Value,
-                theta2Value: props.theta2Value,
-            });
-        }
-    }
-
     render() {
-
         let params = Object.keys(this.props.preset);
         params.shift();
         let lastParam = params.pop() as string;
@@ -95,105 +94,127 @@ class OscillatorContent extends React.Component<{ preset: any, handleSliderChang
     }
 }
 
-function EnvelopeContent(props: any) {
-    let params = Object.keys(props.preset);
-    params.shift()
-    return <div className="SettingsContent">{
-        params.map((param: string, i: number) => {
-            let p: IPreset = props.preset[param]
-            return (
-                <div className="SettingsContentParameter" key={i}>
-                    <h3 className="Envelope">{param.toUpperCase()}</h3>
-                    <Slider
-                        className="ParameterSlider"
-                        defaultValue={p.default}
-                        step={p.step}
-                        min={p.min}
-                        max={p.max}
-                        onChange={(e, newValue) => props.handleSliderChange(param, newValue)}
-                        valueLabelDisplay="auto"
-                    />
-                </div>
-            )
-        })
-    } </div>
-}
+class EnvelopeContent extends React.Component<{ preset: any, handleSliderChange: any, disabled: boolean }, {}> {
 
+    shouldComponentUpdate(nextProps: any, nextState: any) {
+        return nextProps.preset !== this.props.preset || nextProps.handleSliderChange !== this.props.handleSliderChange || nextProps.disabled !== this.props.disabled
+    }
 
-function FilterContent(props: any) {
-    let params = Object.keys(props.preset);
-    params.shift();
-    let type: ITypes = props.preset[params[0]];
-    let typeName = params[0];
-    params.shift();
-
-    const filterDisplayNames = new Map([
-        [LP, 'Low Pass'],
-        [HP, 'High Pass'],
-        [BP, 'Band Pass'],
-        [NOTCH, 'Notch'],
-    ]);
-
-    return <div className="SettingsContent">
-        <Select
-            className="SettingsContentParameter"
-            defaultValue={type.default}
-            onChange={(e) => props.handleSliderChange(typeName, e.target.value)}
-        >
-            {
-                type.options.map((option: string, i: number) => {
-                    return (
-                        <MenuItem key={i} value={option}>{filterDisplayNames.get(option)}</MenuItem>
-                    )
-                })
-            }
-        </Select>
-        {
-            params.map((param: any, i: number) => {
-                let p: IPreset = props.preset[param];
+    render() {
+        let params = Object.keys(this.props.preset);
+        params.shift()
+        return <div className="SettingsContent">{
+            params.map((param: string, i: number) => {
+                let p: IPreset = this.props.preset[param]
                 return (
                     <div className="SettingsContentParameter" key={i}>
-                        <h3>{param}</h3>
+                        <h3 className="Envelope">{param.toUpperCase()}</h3>
                         <Slider
                             className="ParameterSlider"
                             defaultValue={p.default}
+                            disabled={this.props.disabled}
                             step={p.step}
                             min={p.min}
                             max={p.max}
-                            onChange={(e, newValue) => props.handleSliderChange(param, newValue)}
+                            onChange={(e, newValue) => this.props.handleSliderChange(param, newValue)}
                             valueLabelDisplay="auto"
                         />
                     </div>
                 )
             })
-        }
-    </div>
-}
-
-function VolumeContent(props: any) {
-    let p: IPreset = props.preset.volume;
-    return <div className="SettingsContent">
-        <div className="SettingsContentParameter">
-            <Slider
-                className="ParameterSlider"
-                defaultValue={p.default}
-                step={p.step}
-                min={p.min}
-                max={p.max}
-                valueLabelFormat={p.valueLabelFormat}
-                onChange={(e, newValue) => props.handleSliderChange(props.preset.name, newValue)}
-                valueLabelDisplay="auto"
-            />
-        </div>
-    </div>
+        } </div>
+    }
 }
 
 
-
-export default class SettingsCards extends React.Component<{ classNames: any, presets: any, setHighlight: any, clearHighlight: any, sliderChanges: any, theta1Value: number, theta2Value: number, disabledTheta: boolean }, {}> {
+class FilterContent extends React.Component<{ preset: any, handleSliderChange: any }, {}> {
 
     shouldComponentUpdate(nextProps: any, nextState: any) {
-        return (nextProps.theta1Value !== this.props.theta1Value && nextProps.theta2Value !== this.props.theta2Value) || nextProps.diabledTheta !== this.props.disabledTheta
+        return nextProps.preset !== this.props.preset || nextProps.handleSliderChange !== this.props.handleSliderChange
+    }
+
+    render() {
+        let params = Object.keys(this.props.preset);
+        params.shift();
+        let type: ITypes = this.props.preset[params[0]];
+        let typeName = params[0];
+        params.shift();
+
+        const filterDisplayNames = new Map([
+            [LP, 'Low Pass'],
+            [HP, 'High Pass'],
+            [BP, 'Band Pass'],
+            [NOTCH, 'Notch'],
+        ]);
+
+        return <div className="SettingsContent">
+            <Select
+                className="SettingsContentParameter"
+                defaultValue={type.default}
+                onChange={(e) => this.props.handleSliderChange(typeName, e.target.value)}
+            >
+                {
+                    type.options.map((option: string, i: number) => {
+                        return (
+                            <MenuItem key={i} value={option}>{filterDisplayNames.get(option)}</MenuItem>
+                        )
+                    })
+                }
+            </Select>
+            {
+                params.map((param: any, i: number) => {
+                    let p: IPreset = this.props.preset[param];
+                    return (
+                        <div className="SettingsContentParameter" key={i}>
+                            <h3>{param}</h3>
+                            <Slider
+                                className="ParameterSlider"
+                                defaultValue={p.default}
+                                step={p.step}
+                                min={p.min}
+                                max={p.max}
+                                onChange={(e, newValue) => this.props.handleSliderChange(param, newValue)}
+                                valueLabelDisplay="auto"
+                            />
+                        </div>
+                    )
+                })
+            }
+        </div>
+    }
+}
+
+class VolumeContent extends React.Component<{ preset: any, handleSliderChange: any }, {}> {
+
+    shouldComponentUpdate(nextProps: any, nextState: any) {
+        return nextProps.preset !== this.props.preset || nextProps.handleSliderChange !== this.props.handleSliderChange
+    }
+
+    render() {
+        let p: IPreset = this.props.preset.volume;
+        return <div className="SettingsContent">
+            <div className="SettingsContentParameter">
+                <Slider
+                    className="ParameterSlider"
+                    defaultValue={p.default}
+                    step={p.step}
+                    min={p.min}
+                    max={p.max}
+                    valueLabelFormat={p.valueLabelFormat}
+                    onChange={(e, newValue) => this.props.handleSliderChange(this.props.preset.name, newValue)}
+                    valueLabelDisplay="auto"
+                />
+            </div>
+        </div>
+    }
+}
+
+
+
+export default class SettingsCards extends React.Component<{ classNames: any, presets: any, setHighlight: any, clearHighlight: any, sliderChanges: any, theta1Value: number, theta2Value: number, disabledTheta: boolean, disabledEnvelope: boolean }, {}> {
+
+    shouldComponentUpdate(nextProps: any, nextState: any) {
+        return (nextProps.theta1Value !== this.props.theta1Value && nextProps.theta2Value !== this.props.theta2Value) || nextProps.diabledTheta !== this.props.disabledTheta || nextProps.disabledEnvelope !== this.props.disabledEnvelope
     }
 
     render() {
@@ -213,8 +234,8 @@ export default class SettingsCards extends React.Component<{ classNames: any, pr
                             <h2 className="SettingsHeader">{className}</h2>
                             {
                                 {
-                                    'Oscillator': <OscillatorContent preset={preset} handleSliderChange={props.sliderChanges[className]} theta1Value={props.theta1Value} theta2Value={props.theta2Value} disabledTheta={props.disabledTheta} />,
-                                    'Envelope': <EnvelopeContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,
+                                    'Oscillator': <PendulumContent preset={preset} handleSliderChange={props.sliderChanges[className]} theta1Value={props.theta1Value} theta2Value={props.theta2Value} disabledTheta={props.disabledTheta} />,
+                                    'Envelope': <EnvelopeContent preset={preset} handleSliderChange={props.sliderChanges[className]} disabled={props.disabledEnvelope} />,
                                     'Filter': <FilterContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,
                                     'Volume': <VolumeContent preset={preset} handleSliderChange={props.sliderChanges[className]} />,
                                 }[className as string]
