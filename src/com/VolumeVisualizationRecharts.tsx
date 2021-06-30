@@ -30,7 +30,7 @@ export default class VolumeVisualization extends React.Component<ComponentProps,
     }
 
     componentDidMount() {
-        this.intervalID = setInterval(this.get_pendulum_state.bind(this), 70);
+        //this.intervalID = setInterval(this.get_pendulum_state.bind(this), 70);
     }
 
     componentWillUnmount() {

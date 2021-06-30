@@ -92,7 +92,6 @@ export default class AudioGraph {
 
         this.initSmoothTransitions();
         this.connectNodes();
-        //this.envelopeTimerID = window.setInterval(this.loopEnvelope, 10);
         this.oscillatorTimerID = window.setTimeout(this.updateOscillator, 10 );
         this.activeNotes = [];
         this.hasMIDI = false;
@@ -139,32 +138,6 @@ export default class AudioGraph {
                 break;
             default:
                 break;
-        }
-    }
-
-    loopEnvelope = () => {
-        const { a, d, s, r } = this.envelope;
-        if(this.envelope.timings[this.envelope.stage] <= this.audioContext.currentTime) {
-            switch (this.envelope.stage) {
-                case 0:
-                    this.envelope.timings[1] = this.audioContext.currentTime + a;
-                    this.audioNodes.gain.gain.exponentialRampToValueAtTime(1, this.envelope.timings[1]);
-                    this.envelope.stage = 1;
-                    break;
-                case 1:
-                    this.envelope.timings[2] = this.audioContext.currentTime + d;
-                    this.audioNodes.gain.gain.exponentialRampToValueAtTime(s, this.envelope.timings[2]);
-                    this.envelope.stage = 2;
-                    break;
-                case 2:
-                    this.envelope.timings[0] = this.audioContext.currentTime + r;
-                    this.audioNodes.gain.gain.exponentialRampToValueAtTime(DSPZERO, this.envelope.timings[0]);
-                    this.envelope.stage = 0;
-                    break;
-                default:
-                    this.envelope.stage = 0;
-                    break;
-            }
         }
     }
 
@@ -319,6 +292,8 @@ export default class AudioGraph {
             }
             if (!foundDevice) {
                 alert('No MIDI device found');
+            } else {
+              console.log('Connected to MIDI device')
             }
 
         };
@@ -368,7 +343,6 @@ export default class AudioGraph {
         if (navigator.requestMIDIAccess) {
             // @ts-ignore
             navigator.requestMIDIAccess().then( onMIDIInit, onMIDIReject);
-            console.log('Connected to MIDI device')
         }
     }
 }
