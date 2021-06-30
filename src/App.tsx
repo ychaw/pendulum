@@ -1,5 +1,6 @@
 import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Modal from '@material-ui/core/Modal';
 import './App.css';
 
 import { A, D, S, R, FILTER_RESOLUTION } from './data/Constants';
@@ -43,6 +44,7 @@ interface ComponentState {
   filterSpectrum: Float32Array,
   volume: number,
   disabledEnvelope: boolean
+  greeterOpen: boolean
 }
 
 class App extends React.Component<{}, ComponentState> {
@@ -78,7 +80,8 @@ class App extends React.Component<{}, ComponentState> {
       envelopeR: (this.presets.envelope.r.default / this.presets.envelope.r.max) * 100,
       filterSpectrum: this.audioGraph.getFilterSpectrum(FILTER_RESOLUTION),
       volume: this.presets.volume.volume.default,
-      disabledEnvelope: !this.audioGraph.hasMIDI
+      disabledEnvelope: !this.audioGraph.hasMIDI,
+      greeterOpen: true
     }
   }
 
@@ -156,6 +159,13 @@ class App extends React.Component<{}, ComponentState> {
     this.setState({ volume: newValue });
   }
 
+  handleModalClose = () => {
+    this.setState({
+      greeterOpen: false,
+      disabledEnvelope: !this.audioGraph.hasMIDI
+    });
+  };
+
   render() {
     return (
       <ThemeProvider theme={theme}>
@@ -164,6 +174,25 @@ class App extends React.Component<{}, ComponentState> {
             <h1 className="HeaderText">Pendulum</h1>
             <h3 className="HeaderText">Oscillator based on a double pendulum by Yannick Clausen & Henry Peters</h3>
           </div>
+          <Modal
+            open={this.state.greeterOpen}
+            onClose={this.handleModalClose}
+            aria-labelledby="greeter"
+            aria-describedby="greeter explaining the application"
+          >
+            <div className="greeter" style={{color: "#FFFFFF"}}>
+              <h2 className="HeaderText">Welcome!</h2>
+              <p className="greeterText" style={{marginTop: "2em"}}>
+      This synthesizer will try to use the first MIDI device connected to your system as a controller. If it can not find one, it will play continously.
+              </p>
+              <p className="greeterText">
+      Start the simulation by double-clicking the largest frame with the pendulum inside and increase the volume via the slider to the bottom right.
+              </p>
+              <p className="greeterText">
+      We hope you will enjoy our work!
+              </p>
+            </div>
+          </Modal>
           <Visualizations
             highlighted={this.state.highlighted}
             doublePendulumVisualization={

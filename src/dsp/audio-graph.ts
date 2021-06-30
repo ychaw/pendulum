@@ -291,13 +291,15 @@ export default class AudioGraph {
                 this.hasMIDI = foundDevice;
             }
             if (!foundDevice) {
-                alert('No MIDI device found');
+                console.log('No MIDI device found');
             } else {
               console.log('Connected to MIDI device')
             }
 
         };
         const onMIDIReject = (err: any) => {
+            this.audioNodes.gain.gain.cancelScheduledValues(0);
+            this.audioNodes.gain.gain.setTargetAtTime(1.0, 0, 1);
             alert('MIDI system failed to start.');
         };
         const MIDIMessageEventHandler = (event: any) => {
