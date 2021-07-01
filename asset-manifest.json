@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/pendulum/static/css/main.8a6f33cb.chunk.css",
-    "main.js": "/pendulum/static/js/main.b13413a1.chunk.js",
-    "main.js.map": "/pendulum/static/js/main.b13413a1.chunk.js.map",
+    "main.css": "/pendulum/static/css/main.e302685e.chunk.css",
+    "main.js": "/pendulum/static/js/main.e254f178.chunk.js",
+    "main.js.map": "/pendulum/static/js/main.e254f178.chunk.js.map",
     "runtime-main.js": "/pendulum/static/js/runtime-main.dde3b018.js",
     "runtime-main.js.map": "/pendulum/static/js/runtime-main.dde3b018.js.map",
     "static/js/2.6816b4a8.chunk.js": "/pendulum/static/js/2.6816b4a8.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.c23858c5.chunk.js": "/pendulum/static/js/3.c23858c5.chunk.js",
     "static/js/3.c23858c5.chunk.js.map": "/pendulum/static/js/3.c23858c5.chunk.js.map",
     "index.html": "/pendulum/index.html",
-    "static/css/main.8a6f33cb.chunk.css.map": "/pendulum/static/css/main.8a6f33cb.chunk.css.map",
+    "static/css/main.e302685e.chunk.css.map": "/pendulum/static/css/main.e302685e.chunk.css.map",
     "static/js/2.6816b4a8.chunk.js.LICENSE.txt": "/pendulum/static/js/2.6816b4a8.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.dde3b018.js",
     "static/js/2.6816b4a8.chunk.js",
-    "static/css/main.8a6f33cb.chunk.css",
-    "static/js/main.b13413a1.chunk.js"
+    "static/css/main.e302685e.chunk.css",
+    "static/js/main.e254f178.chunk.js"
   ]
 }
