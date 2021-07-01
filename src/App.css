@@ -246,6 +246,7 @@ h3.HeaderText {
     font-style: normal;
     font-weight: normal;
     font-size: 20px;
+    color: #FFFFFF;
 
     display: flex;
     flex-direction: column;
@@ -253,8 +254,7 @@ h3.HeaderText {
     justify-content: center;
 
     background: #333333;
-    border-radius: 20px;
-    border: 2px solid #333333;
+    border: none;
 
 }
 
@@ -262,6 +262,28 @@ h3.HeaderText {
   display: block;
   margin: auto;
   padding: 0.7em;
+}
+
+.greeter>button {
+  padding: .6em;
+  margin: .5em;
+  margin-top: .9em;
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 20px;
+
+  color: #FFFFFF;
+  background-color: #222222;
+  border: 2px solid #2F80ED;
+  border-radius: 20px;
+
+  cursor: pointer;
+  transition: all 0.5s ease 0s;
+}
+
+.greeter>button:hover {
+  background-color: #333333;
 }
 
 

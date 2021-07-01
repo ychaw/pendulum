@@ -54,6 +54,7 @@ export default class AudioGraph {
     fft: FFT;
     activeNotes: Array<number>;
     hasMIDI: boolean;
+    enabledMIDI: boolean;
 
     constructor(doublePendulum: DoublePendulum) {
         // create context
@@ -95,8 +96,8 @@ export default class AudioGraph {
         this.oscillatorTimerID = window.setTimeout(this.updateOscillator, 10 );
         this.activeNotes = [];
         this.hasMIDI = false;
+        this.enabledMIDI = false;
         console.log('constructed audio graph');
-        this.setupMidi();
     }
 
     connectNodes() {
@@ -115,7 +116,7 @@ export default class AudioGraph {
     // All values that ramp somewhere need to be set once
     initSmoothTransitions() {
         this.audioNodes.master.gain.exponentialRampToValueAtTime(Preset.volume.volume.default, this.audioContext.currentTime);
-        this.audioNodes.gain.gain.exponentialRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
+        this.toggleEnvelope(false);
         this.audioNodes.filter.frequency.exponentialRampToValueAtTime(Preset.filter.frequency.default, this.audioContext.currentTime);
         this.audioNodes.oscillator.gainNodes[0].gain.linearRampToValueAtTime(1, this.audioContext.currentTime);
         this.audioNodes.oscillator.gainNodes[1].gain.linearRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
@@ -277,6 +278,15 @@ export default class AudioGraph {
       return magOut;
     }
 
+    toggleEnvelope(enable: boolean): void {
+        if (enable) {
+            this.audioNodes.gain.gain.exponentialRampToValueAtTime(DSPZERO, this.audioContext.currentTime);
+        } else {
+            this.audioNodes.gain.gain.cancelScheduledValues(0);
+            this.audioNodes.gain.gain.setTargetAtTime(1.0, 0, 1);
+        }
+    }
+
     setupMidi(): void {
         let midiAccess;
         const portamento = 0.001;
@@ -293,14 +303,14 @@ export default class AudioGraph {
             if (!foundDevice) {
                 console.log('No MIDI device found');
             } else {
-              console.log('Connected to MIDI device')
+                console.log('Connected to MIDI device')
+                this.enabledMIDI = true;
+                this.toggleEnvelope(true);
             }
 
         };
         const onMIDIReject = (err: any) => {
-            this.audioNodes.gain.gain.cancelScheduledValues(0);
-            this.audioNodes.gain.gain.setTargetAtTime(1.0, 0, 1);
-            alert('MIDI system failed to start.');
+            console.log('MIDI system failed to start.');
         };
         const MIDIMessageEventHandler = (event: any) => {
             switch (event.data[0] & 0xf0) {

@@ -180,10 +180,10 @@ class App extends React.Component<{}, ComponentState> {
             aria-labelledby="greeter"
             aria-describedby="greeter explaining the application"
           >
-            <div className="greeter" style={{color: "#FFFFFF"}}>
+            <div className="greeter">
               <h2 className="HeaderText">Welcome!</h2>
               <p className="greeterText" style={{marginTop: "2em"}}>
-      This synthesizer will try to use the first MIDI device connected to your system as a controller. If it can not find one, it will play continously.
+      This synthesizer will try to use any MIDI device connected to your system as a controller.
               </p>
               <p className="greeterText">
       Start the simulation by double-clicking the largest frame with the pendulum inside and increase the volume via the slider to the bottom right.
@@ -191,6 +191,8 @@ class App extends React.Component<{}, ComponentState> {
               <p className="greeterText">
       We hope you will enjoy our work!
               </p>
+              <button onClick={() => { this.audioGraph.setupMidi(); this.setState({ greeterOpen: false, disabledEnvelope: false })}}>Enable MIDI</button>
+              <button onClick={this.handleModalClose}>Don't enable MIDI</button>
             </div>
           </Modal>
           <Visualizations
